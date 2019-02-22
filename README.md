@@ -4,7 +4,17 @@
 
 O projeto usa o Maven para resolução de dependências e construção. Necessário instala-lo: 
 
+```
+# com Apt
+sudo apt install maven
+
+# com Dnf
+sudo dnf install maven
+```
+
+
 Depois basta executar a construção:
+
 ```
 mvn clean package
 ```
