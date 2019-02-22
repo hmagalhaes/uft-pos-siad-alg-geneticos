@@ -41,13 +41,13 @@ class MutationAgent {
 	public List<Chromosome> mutatePopulation(final List<Chromosome> population) {
 		final short mutationBits = calcMutationBits(population);
 
-		final List<Chromosome> mutatedPop = new ArrayList<>(population);
+		final List<Chromosome> mutatedPop = new ArrayList<>(mutantPopulationSize);
 		for (int i = 0; i < mutantPopulationSize; i++) {
 			final int mutantIndex = randomizer.nextInt(populationSize);
 			final Chromosome healty = population.get(mutantIndex);
 			final Chromosome mutant = mutateChromosome(healty, mutationBits);
 
-			mutatedPop.set(mutantIndex, mutant);
+			mutatedPop.add(mutant);
 		}
 		return mutatedPop;
 	}

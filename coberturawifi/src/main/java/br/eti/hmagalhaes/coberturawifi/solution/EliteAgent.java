@@ -37,14 +37,14 @@ class EliteAgent {
 		final List<GeneticSolution> sortedSolutions = solutionList.stream()
 				.sorted(GeneticSolution.getBestFitnessComparator()).collect(Collectors.toList());
 
-		System.out.println("Generation elite:");
+//		System.out.println("Generation elite:");
 		final List<Chromosome> eliteList = new ArrayList<>(elitePopulationSize);
 		for (int i = 0; i < elitePopulationSize; i++) {
 			GeneticSolution solution = sortedSolutions.get(i);
 			Chromosome elite = solution.chromosome;
 
 			eliteList.add(elite);
-			System.out.println("--- " + solution);
+//			System.out.println("--- " + solution);
 		}
 		return eliteList;
 	}

@@ -27,12 +27,12 @@ class BestSolutionsHolder {
 
 		bestList.clear();
 
-		System.out.println("Melhores soluções globais:");
+//		System.out.println("Melhores soluções globais:");
 		for (short i = 0; bestList.size() < solutionsLimit && i < sortedSolutions.size(); i++) {
 			final GeneticSolution candidate = sortedSolutions.get(i);
 			if (isNewSolution(candidate)) {
 				bestList.add(candidate);
-				System.out.println("--- " + candidate.fitness);
+//				System.out.println("--- " + candidate.fitness);
 			}
 		}
 	}

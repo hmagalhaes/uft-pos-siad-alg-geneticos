@@ -1,9 +1,7 @@
 package br.eti.hmagalhaes.coberturawifi.solution;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import br.eti.hmagalhaes.coberturawifi.Configs;
 import br.eti.hmagalhaes.coberturawifi.model.Blueprint;
@@ -27,6 +25,7 @@ public class SolutionFinder {
 	private final EliteAgent eliteAgent = EliteAgent.getInstance();
 	private final CrossingAgent crossingAgent = CrossingAgent.getInstance();
 	private final InitialPopGenerator initialPopGenerator = InitialPopGenerator.getInstance();
+	private final SelectionAgent selectionAgent = SelectionAgent.getInstance();
 
 	private SolutionFinder() {
 		this.generationCount = configs.getShort(Configs.GENERATION_COUNT);
@@ -44,22 +43,22 @@ public class SolutionFinder {
 		return instance;
 	}
 
-	public List<Layout> findBestMatch(final Blueprint plant, final short accessPointCount,
+	public List<Layout> findBestMatch(final Blueprint blueprint, final short accessPointCount,
 			final int accessPointRadiusInPixels) {
 
 		final BestSolutionsHolder bestSolutionsHolder = new BestSolutionsHolder(resultSolutionCount);
-		List<Chromosome> population = initialPopGenerator.generatePopulation(plant, accessPointCount);
+		List<Chromosome> population = initialPopGenerator.generatePopulation(blueprint, accessPointCount);
 		int generation = 0;
 
 		while (true) {
 			System.out.printf("Buscando melhor solução => geração: %d / %d\n", generation + 1, this.generationCount);
 
-			final List<GeneticSolution> solutionList = calculateFitness(plant, population, accessPointRadiusInPixels);
+			final List<GeneticSolution> solutionList = calculateFitness(blueprint, population,
+					accessPointRadiusInPixels);
 
-			System.out.println("Melhores da geração:");
-			solutionList.stream().sorted(GeneticSolution.getBestFitnessComparator()).limit(resultSolutionCount)
-					.forEach(System.out::println);
-//			System.out.println("Solutions: \n" + solutionList);
+//			System.out.println("Melhores da geração:");
+//			solutionList.stream().sorted(GeneticSolution.getBestFitnessComparator()).limit(resultSolutionCount)
+//					.forEach(System.out::println);
 
 			bestSolutionsHolder.checkForBetter(solutionList);
 
@@ -73,7 +72,9 @@ public class SolutionFinder {
 
 		final List<GeneticSolution> globalBestSolutionList = bestSolutionsHolder.getBestSolutions();
 
-		System.out.println("Resultado >> bestfitness: " + bestFitness + ", bestTilesHit: " + bestTilesHit);
+		System.out.println("Resultado >> bestfitness: " + bestFitness + ", bestTilesHit: " + bestTilesHit
+				+ ", totalRequiredTiles: " + blueprint.requiredTileList.size() + ", coverRatio: "
+				+ ((double)bestTilesHit / (double)blueprint.requiredTileList.size()) + "%");
 
 		System.out.println("Global best:");
 		final List<Layout> layoutList = new ArrayList<>(globalBestSolutionList.size());
@@ -92,11 +93,22 @@ public class SolutionFinder {
 		final List<Chromosome> eliteList = eliteAgent.findPopulationElite(solutionList);
 		final List<Chromosome> crossedList = crossingAgent.crossPopulation(population);
 		final List<Chromosome> mutantList = mutationAgent.mutatePopulation(population);
+		final List<Chromosome> selectedList = selectionAgent.select(solutionList);
+
+//		System.out.println("elites: " + eliteList.size() + ", crossed: " + crossedList.size() + ", mutant: "
+//				+ mutantList.size() + ", selected: " + selectedList.size());
 
 		final List<Chromosome> newPopulation = new ArrayList<>(populationSize);
 		newPopulation.addAll(eliteList);
 		newPopulation.addAll(crossedList);
 		newPopulation.addAll(mutantList);
+		newPopulation.addAll(selectedList);
+
+		if (newPopulation.size() != populationSize) {
+			throw new IllegalStateException(
+					"Tamanho população inválido => pop: " + newPopulation.size() + ", expected: " + populationSize);
+		}
+
 		return newPopulation;
 	}
 
@@ -126,9 +138,9 @@ public class SolutionFinder {
 				}
 			}
 		}
-		
+
 		// TODO necessário reduzir a pontuação quando há sobreposição de cobertura
-		
+
 		final double fitness = ((double) tilesHit) / ((double) blueprint.requiredTileList.size());
 //		System.out.println("fitness: " + fitness + ", tileshit: " + tilesHit + ", requiredTiles: "
 //				+ blueprint.requiredTileList.size());

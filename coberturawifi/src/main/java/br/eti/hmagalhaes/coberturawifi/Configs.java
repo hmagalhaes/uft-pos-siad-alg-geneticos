@@ -17,6 +17,7 @@ public class Configs {
 	public static final String POPULATION_SIZE = "population.size";
 	public static final String POPULATION_RATIO_MUTANT = "population.ratio.mutant";
 	public static final String POPULATION_RATIO_CROSSED = "population.ratio.crossed";
+//	public static final String POPULATION_RATIO_SELECTED = "population.ratio.selected";
 	public static final String POPULATION_RATIO_ELITE = "population.ratio.elite";
 	public static final String MUTATION_BITS_RATIO = "mutation.bits.ratio";
 	public static final String STRATEGY_CROSSING = "strategy.crossing";

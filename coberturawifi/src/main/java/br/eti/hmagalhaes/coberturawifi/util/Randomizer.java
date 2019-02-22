@@ -27,4 +27,8 @@ public class Randomizer {
 		return (short) random.nextInt(bound);
 	}
 
+	public double nextDoubleFromZeroToOne() {
+		return random.nextDouble();
+	}
+
 }
