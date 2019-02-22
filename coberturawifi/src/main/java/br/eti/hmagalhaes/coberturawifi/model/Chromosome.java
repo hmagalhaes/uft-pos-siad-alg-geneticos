@@ -16,7 +16,7 @@ public class Chromosome {
 
 	public Chromosome(short accessPointCount, BitList bitList) {
 		this.accessPointCount = accessPointCount;
-		this.bitList = bitList;
+		this.bitList = bitList.clone();
 	}
 
 	public Chromosome(short accessPointCount) {
@@ -32,9 +32,9 @@ public class Chromosome {
 		return Chromosome.getBitsCount(this.accessPointCount);
 	}
 
-	public void setCoordinatesIn(int x, int y, short accessPointIndex) {
-		final BitList xBitList = BitList.of(x);
-		final BitList yBitList = BitList.of(y);
+	public void setCoordinatesFor(final Coordinates coordinates, short accessPointIndex) {
+		final BitList xBitList = BitList.of(coordinates.x);
+		final BitList yBitList = BitList.of(coordinates.y);
 
 		final int xIndex = accessPointIndex * CHROMOSOME_ATTRIBUTE_LENGTH * CHROMOSOME_ATTRIBUTE_LENGTH;
 		final int yIndex = xIndex + CHROMOSOME_ATTRIBUTE_LENGTH;
@@ -46,20 +46,20 @@ public class Chromosome {
 	public List<Coordinates> getCoordinateList() {
 		final List<Coordinates> coordsList = new ArrayList<>();
 		for (short i = 0; i < accessPointCount; i++) {
-			final Coordinates coords = getCoordinate(i);
+			final Coordinates coords = getCoordinatesFor(i);
 			coordsList.add(coords);
 		}
 		return coordsList;
 	}
 
-	public Coordinates getCoordinate(short accessPointIndex) {
+	public Coordinates getCoordinatesFor(short accessPointIndex) {
 		final int x = getX(accessPointIndex);
 		final int y = getY(accessPointIndex);
 
 		return new Coordinates(x, y);
 	}
 
-	public int getX(short accessPointIndex) {
+	private int getX(short accessPointIndex) {
 		final int start = accessPointIndex * CHROMOSOME_ATTRIBUTE_LENGTH * CHROMOSOME_ATTRIBUTE_LENGTH;
 		final int end = start + CHROMOSOME_ATTRIBUTE_LENGTH;
 		final BitList bitListPiece = bitList.getBitsInterval(start, end);
@@ -67,7 +67,7 @@ public class Chromosome {
 		return bitListPiece.toInt();
 	}
 
-	public int getY(short accessPointIndex) {
+	private int getY(short accessPointIndex) {
 		final int start = accessPointIndex * CHROMOSOME_ATTRIBUTE_LENGTH * CHROMOSOME_ATTRIBUTE_LENGTH
 				+ CHROMOSOME_ATTRIBUTE_LENGTH;
 		final int end = start + CHROMOSOME_ATTRIBUTE_LENGTH;
@@ -82,6 +82,39 @@ public class Chromosome {
 
 	public Chromosome withBits(final BitList newBits) {
 		return new Chromosome(accessPointCount, newBits);
+	}
+
+	@Override
+	public String toString() {
+		return "Chromosome [ " + getCoordinateList().toString() + " ]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + accessPointCount;
+		result = prime * result + ((bitList == null) ? 0 : bitList.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Chromosome other = (Chromosome) obj;
+		if (accessPointCount != other.accessPointCount)
+			return false;
+		if (bitList == null) {
+			if (other.bitList != null)
+				return false;
+		} else if (!bitList.equals(other.bitList))
+			return false;
+		return true;
 	}
 
 }

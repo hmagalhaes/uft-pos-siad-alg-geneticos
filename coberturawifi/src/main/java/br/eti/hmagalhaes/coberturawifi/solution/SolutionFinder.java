@@ -3,7 +3,6 @@ package br.eti.hmagalhaes.coberturawifi.solution;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import br.eti.hmagalhaes.coberturawifi.Configs;
@@ -12,6 +11,7 @@ import br.eti.hmagalhaes.coberturawifi.model.Chromosome;
 import br.eti.hmagalhaes.coberturawifi.model.Coordinates;
 import br.eti.hmagalhaes.coberturawifi.model.GeneticSolution;
 import br.eti.hmagalhaes.coberturawifi.model.Layout;
+import br.eti.hmagalhaes.coberturawifi.model.Rect;
 import br.eti.hmagalhaes.coberturawifi.model.Tile;
 
 public class SolutionFinder {
@@ -25,18 +25,10 @@ public class SolutionFinder {
 	private final Configs configs = Configs.getInstance();
 	private final MutationAgent mutationAgent = MutationAgent.getInstance();
 	private final EliteAgent eliteAgent = EliteAgent.getInstance();
-	private final CrossingAgent crossingAgent;
+	private final CrossingAgent crossingAgent = CrossingAgent.getInstance();
+	private final InitialPopGenerator initialPopGenerator = InitialPopGenerator.getInstance();
 
 	private SolutionFinder() {
-		{
-			final String strategy = configs.getString(Configs.STRATEGY_CROSSING);
-			if (ChunksCrossingAgent.STRATEGY_NAME.equals(strategy)) {
-				this.crossingAgent = ChunksCrossingAgent.getInstance();
-			} else {
-				throw new IllegalArgumentException("Bad crossing strategy => " + strategy);
-			}
-		}
-
 		this.generationCount = configs.getShort(Configs.GENERATION_COUNT);
 		this.resultSolutionCount = configs.getShort(Configs.RESULT_SOLUTION_COUNT);
 		this.populationSize = configs.getShort(Configs.POPULATION_SIZE);
@@ -55,16 +47,21 @@ public class SolutionFinder {
 	public List<Layout> findBestMatch(final Blueprint plant, final short accessPointCount,
 			final int accessPointRadiusInPixels) {
 
-		List<GeneticSolution> globalBestSolutionList = Collections.emptyList();
-		List<Chromosome> population = generateRandomPopulation(plant, accessPointCount);
+		final BestSolutionsHolder bestSolutionsHolder = new BestSolutionsHolder(resultSolutionCount);
+		List<Chromosome> population = initialPopGenerator.generatePopulation(plant, accessPointCount);
 		int generation = 0;
 
 		while (true) {
-			System.out.printf("Buscando melhor solução => geração: %d / %d\n", generation, this.generationCount);
+			System.out.printf("Buscando melhor solução => geração: %d / %d\n", generation + 1, this.generationCount);
 
-			final List<GeneticSolution> solutionList = calculateFitness(plant, population);
+			final List<GeneticSolution> solutionList = calculateFitness(plant, population, accessPointRadiusInPixels);
 
-			globalBestSolutionList = getBestGlobalSolutions(globalBestSolutionList, solutionList);
+			System.out.println("Melhores da geração:");
+			solutionList.stream().sorted(GeneticSolution.getBestFitnessComparator()).limit(resultSolutionCount)
+					.forEach(System.out::println);
+//			System.out.println("Solutions: \n" + solutionList);
+
+			bestSolutionsHolder.checkForBetter(solutionList);
 
 			if (stopConditionReached(generation)) {
 				break;
@@ -74,9 +71,16 @@ public class SolutionFinder {
 			generation++;
 		}
 
+		final List<GeneticSolution> globalBestSolutionList = bestSolutionsHolder.getBestSolutions();
+
+		System.out.println("Resultado >> bestfitness: " + bestFitness + ", bestTilesHit: " + bestTilesHit);
+
+		System.out.println("Global best:");
 		final List<Layout> layoutList = new ArrayList<>(globalBestSolutionList.size());
-		for (GeneticSolution geneticSolution : globalBestSolutionList) {
-			final Layout layout = Layout.of(geneticSolution, accessPointRadiusInPixels);
+		for (GeneticSolution solution : globalBestSolutionList) {
+			System.out.println("--- " + solution);
+
+			final Layout layout = Layout.of(solution, accessPointRadiusInPixels);
 			layoutList.add(layout);
 		}
 		return layoutList;
@@ -96,78 +100,89 @@ public class SolutionFinder {
 		return newPopulation;
 	}
 
-	private List<GeneticSolution> getBestGlobalSolutions(final List<GeneticSolution> list1,
-			final List<GeneticSolution> list2) {
+	private List<GeneticSolution> calculateFitness(final Blueprint plant, final List<Chromosome> population,
+			final int accessPointRadiusInPixels) {
 
-		final List<GeneticSolution> allSolutions = new ArrayList<>(list1.size() + list2.size());
-		allSolutions.addAll(list1);
-		allSolutions.addAll(list2);
-
-		final List<GeneticSolution> sortedSolutions = allSolutions.stream()
-				.sorted(GeneticSolution.getBestFitnessComparator()).collect(Collectors.toList());
-
-		System.out.println("Melhores soluções globais");
-		final List<GeneticSolution> bestSolutions = new ArrayList<>(resultSolutionCount);
-		for (int i = 0; i < resultSolutionCount; i++) {
-			GeneticSolution solution = sortedSolutions.get(i);
-			bestSolutions.add(solution);
-			System.out.println("--- " + solution.fitness);
-		}
-		return bestSolutions;
-	}
-
-	private List<GeneticSolution> calculateFitness(final Blueprint plant, final List<Chromosome> population) {
 		final List<GeneticSolution> solutionList = new ArrayList<>(population.size());
 		for (Chromosome chromosome : population) {
-			final GeneticSolution solution = calculateFitness(plant, chromosome);
+			final GeneticSolution solution = calculateFitness(plant, chromosome, accessPointRadiusInPixels);
 			solutionList.add(solution);
 		}
 		return solutionList;
 	}
 
-	private GeneticSolution calculateFitness(final Blueprint blueprint, final Chromosome chromosome) {
+	private static double bestFitness = 0;
+	private static int bestTilesHit = 0;
+
+	private GeneticSolution calculateFitness(final Blueprint blueprint, final Chromosome chromosome,
+			final int accessPointRadiusInPixels) {
+
 		int tilesHit = 0;
 		for (Tile tile : blueprint.requiredTileList) {
 			for (Coordinates coords : chromosome.getCoordinateList()) {
-				if (tile.rect.collidesWith(coords)) {
+				if (collides(tile.rect, coords, accessPointRadiusInPixels)) {
 					tilesHit++;
 					break;
 				}
 			}
 		}
-
+		
+		// TODO necessário reduzir a pontuação quando há sobreposição de cobertura
+		
 		final double fitness = ((double) tilesHit) / ((double) blueprint.requiredTileList.size());
 //		System.out.println("fitness: " + fitness + ", tileshit: " + tilesHit + ", requiredTiles: "
 //				+ blueprint.requiredTileList.size());
 
+		bestFitness = Math.max(bestFitness, fitness);
+		bestTilesHit = Math.max(bestTilesHit, tilesHit);
+
 		return new GeneticSolution(chromosome, fitness);
+	}
+
+	private boolean collides(Rect rect, Coordinates circleCenter, int circleRadius) {
+//		if (circleCenter.isWithin(rect)) {
+//			return true;
+//		}
+
+		// https://yal.cc/rectangle-circle-intersection-test/
+
+		final int rectWidth = rect.width();
+		final int rectHeight = rect.height();
+
+		final int nearestX = Math.max(rect.x1, Math.min(circleCenter.x, rect.x1 + rectWidth));
+		final int nearestY = Math.max(rect.y1, Math.min(circleCenter.y, rect.y1 + rectHeight));
+
+		final int deltaX = circleCenter.x - nearestX;
+		final int deltaY = circleCenter.y - nearestY;
+
+		return (deltaX * deltaX + deltaY * deltaY) < (circleRadius * circleRadius);
+
+//
+//		final int xDistance = Math.abs(rect.xCenter() - circleCenter.x);
+//		final int yDistance = Math.abs(rect.yCenter() - circleCenter.y);
+//
+//		final int rectHalfWidth = rect.width() / 2;
+//		final int rectHalfHeight = rect.height() / 2;
+//
+//		// Centros estão além da mínima distância para colisão
+//		{
+//			final int maximumXDistance = rectHalfWidth + circleRadius;
+//			if (xDistance >= maximumXDistance) {
+//				return false;
+//			}
+//			final int maximumYDistance = rectHalfHeight + circleRadius;
+//			if (yDistance >= maximumYDistance) {
+//				return false;
+//			}
+//		}
+
+		// Colisão com o raio de cobertura
+		// https://stackoverflow.com/questions/401847/circle-rectangle-collision-detection-intersection
+
 	}
 
 	private boolean stopConditionReached(final int generation) {
 		return generation >= (this.generationCount - 1);
-	}
-
-	private List<Chromosome> generateRandomPopulation(final Blueprint plant, final short accessPointCount) {
-
-		final Random random = new Random();
-
-		final List<Chromosome> population = new ArrayList<>(populationSize);
-		for (short i = 0; i < populationSize; i++) {
-			final Chromosome chromosome = generateChromosome(plant, accessPointCount, random);
-			population.add(chromosome);
-		}
-		return population;
-	}
-
-	private Chromosome generateChromosome(final Blueprint plant, final short accessPointCount, final Random random) {
-		final Chromosome chromosome = new Chromosome(accessPointCount);
-		for (short apIndex = 0; apIndex < accessPointCount; apIndex++) {
-			final int x = random.nextInt(plant.widthInPixels);
-			final int y = random.nextInt(plant.heightInPixels);
-
-			chromosome.setCoordinatesIn(x, y, apIndex);
-		}
-		return chromosome;
 	}
 
 }

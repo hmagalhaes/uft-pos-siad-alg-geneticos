@@ -1,6 +1,7 @@
 package br.eti.hmagalhaes.coberturawifi.output;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
@@ -86,11 +87,22 @@ public class SolutionWriter {
 
 	private void printSolutions(final BufferedImage image, final List<AccessPoint> accessPointList) {
 
+		final Font font = new Font("serif", Font.BOLD, 12);
+
 		final Graphics2D graphics = image.createGraphics();
-		for (AccessPoint ap : accessPointList) {
+		graphics.setFont(font);
+
+		for (int i = 0; i < accessPointList.size(); i++) {
+			final AccessPoint ap = accessPointList.get(i);
 			drawRadius(ap, graphics);
-			drawCross(ap, graphics);
+//			drawCross(ap, graphics);
+			drawNumber(ap, graphics, i);
 		}
+	}
+
+	private void drawNumber(final AccessPoint ap, final Graphics2D graphics, final int number) {
+		graphics.setColor(CROSS_COLOR);
+		graphics.drawString(Integer.toString(number), ap.x - 3, ap.y - 3);
 	}
 
 	private void drawCross(final AccessPoint ap, final Graphics2D graphics) {

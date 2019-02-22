@@ -2,7 +2,7 @@ package br.eti.hmagalhaes.coberturawifi.util;
 
 import java.util.BitSet;
 
-public class BitList {
+public class BitList implements Cloneable {
 
 	private final BitSet bitSet;
 	private int size = 0;
@@ -98,7 +98,7 @@ public class BitList {
 
 	/**
 	 * @param start Inclusivo
-	 * @param end Não inclusivo
+	 * @param end   Não inclusivo
 	 */
 	public BitList getBitsInterval(int start, int end) {
 		final BitSet bitSetInterval = bitSet.get(start, end);
@@ -107,9 +107,38 @@ public class BitList {
 		return new BitList(bitSetInterval, size);
 	}
 
+	@Override
 	public BitList clone() {
 		final BitSet clonedBits = bitSet.get(0, size);
 		return new BitList(clonedBits, size);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((bitSet == null) ? 0 : bitSet.hashCode());
+		result = prime * result + size;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BitList other = (BitList) obj;
+		if (size != other.size)
+			return false;
+		if (bitSet == null) {
+			if (other.bitSet != null)
+				return false;
+		} else if (!bitSet.equals(other.bitSet))
+			return false;
+		return true;
 	}
 
 }

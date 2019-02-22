@@ -2,17 +2,18 @@ package br.eti.hmagalhaes.coberturawifi.solution;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import br.eti.hmagalhaes.coberturawifi.Configs;
 import br.eti.hmagalhaes.coberturawifi.model.Chromosome;
 import br.eti.hmagalhaes.coberturawifi.util.BitList;
+import br.eti.hmagalhaes.coberturawifi.util.Randomizer;
 
 class MutationAgent {
 
 	private static MutationAgent instance;
 
 	private final Configs configs = Configs.getInstance();
+	private final Randomizer randomizer = Randomizer.getInstance();
 	private final short populationSize;
 	private final float mutationRatio;
 
@@ -38,25 +39,24 @@ class MutationAgent {
 	}
 
 	public List<Chromosome> mutatePopulation(final List<Chromosome> population) {
-		final Random random = new Random();
 		final short mutationBits = calcMutationBits(population);
 
 		final List<Chromosome> mutatedPop = new ArrayList<>(population);
 		for (int i = 0; i < mutantPopulationSize; i++) {
-			final int mutantIndex = random.nextInt(populationSize);
+			final int mutantIndex = randomizer.nextInt(populationSize);
 			final Chromosome healty = population.get(mutantIndex);
-			final Chromosome mutant = mutateChromosome(healty, random, mutationBits);
+			final Chromosome mutant = mutateChromosome(healty, mutationBits);
 
 			mutatedPop.set(mutantIndex, mutant);
 		}
 		return mutatedPop;
 	}
 
-	private Chromosome mutateChromosome(final Chromosome healthy, final Random random, final short mutationBits) {
+	private Chromosome mutateChromosome(final Chromosome healthy, final short mutationBits) {
 
 		final BitList bits = healthy.getBits();
 		for (short mutationCount = 0; mutationCount < mutationBits; mutationCount++) {
-			final short bitIndex = (short) random.nextInt(healthy.getBitsCount());
+			final short bitIndex = randomizer.nextShort(healthy.getBitsCount());
 			final boolean newBit = !bits.get(bitIndex);
 
 			bits.set(bitIndex, newBit);

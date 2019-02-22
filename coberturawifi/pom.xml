@@ -6,6 +6,15 @@
 	<artifactId>coberturawifi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<resources>
 			<resource>
@@ -20,6 +29,30 @@
 				<configuration>
 					<target>1.8</target>
 					<source>1.8</source>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<configuration>
+					<mainClass>br.eti.hmagalhaes.coberturawifi.CoberturaApplication</mainClass>
+					<arguments>
+						<!-- Arquivo da planta -->
+						<argument>blueprint-marked.png</argument>
+
+						<!-- Largura da planta em metros -->
+						<argument>40</argument>
+
+						<!-- Altura da Planta -->
+						<argument>19</argument>
+
+						<!-- Quantidade de pontos de acesso -->
+						<argument>3</argument>
+
+						<!-- Raio de cobertura do ponto de acesso -->
+						<argument>5</argument>
+					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>
