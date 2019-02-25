@@ -24,7 +24,7 @@ public class Blueprint {
 		this.pixelsForMeter = pixelsForMeter;
 	}
 
-	public static class PlantBuilder {
+	public static class BlueprintBuilder {
 		private int widthInPixels;
 		private int heightInPixels;
 		private int widthInMeters;
@@ -38,37 +38,37 @@ public class Blueprint {
 					allTileList, pixelsForMeter);
 		}
 
-		public PlantBuilder widthInPixels(int widthInPixels) {
+		public BlueprintBuilder widthInPixels(int widthInPixels) {
 			this.widthInPixels = widthInPixels;
 			return this;
 		}
 
-		public PlantBuilder heightInPixels(int heightInPixels) {
+		public BlueprintBuilder heightInPixels(int heightInPixels) {
 			this.heightInPixels = heightInPixels;
 			return this;
 		}
 
-		public PlantBuilder widthInMeters(int widthInMeters) {
+		public BlueprintBuilder widthInMeters(int widthInMeters) {
 			this.widthInMeters = widthInMeters;
 			return this;
 		}
 
-		public PlantBuilder heightInMeters(int heightInMeters) {
+		public BlueprintBuilder heightInMeters(int heightInMeters) {
 			this.heightInMeters = heightInMeters;
 			return this;
 		}
 
-		public PlantBuilder requiredTileList(List<Tile> requiredTileList) {
+		public BlueprintBuilder requiredTileList(List<Tile> requiredTileList) {
 			this.requiredTileList = requiredTileList;
 			return this;
 		}
 
-		public PlantBuilder allTileList(List<Tile> allTileList) {
+		public BlueprintBuilder allTileList(List<Tile> allTileList) {
 			this.allTileList = allTileList;
 			return this;
 		}
 
-		public PlantBuilder pixelsForMeter(int pixelsForMeter) {
+		public BlueprintBuilder pixelsForMeter(int pixelsForMeter) {
 			this.pixelsForMeter = pixelsForMeter;
 			return this;
 		}

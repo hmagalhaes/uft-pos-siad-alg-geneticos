@@ -6,13 +6,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
 import br.eti.hmagalhaes.coberturawifi.Configs;
 import br.eti.hmagalhaes.coberturawifi.model.Blueprint;
-import br.eti.hmagalhaes.coberturawifi.model.Blueprint.PlantBuilder;
+import br.eti.hmagalhaes.coberturawifi.model.Blueprint.BlueprintBuilder;
 import br.eti.hmagalhaes.coberturawifi.model.Pixel;
 import br.eti.hmagalhaes.coberturawifi.model.Rect;
 import br.eti.hmagalhaes.coberturawifi.model.Rect.RectBuilder;
@@ -29,14 +28,14 @@ public class BlueprintReader {
 		return instance;
 	}
 
-	public Blueprint readPlant(final String fileName, final int plantWidth, final int plantHeight) {
+	public Blueprint readPlant(final String fileName, final int blueprintWidth, final int blueprintHeight) {
 		final BufferedImage image = readImage(fileName);
-		final Tiles tiles = createTiles(plantWidth, plantHeight, image);
-		final int pixelsForMeter = image.getWidth() / plantWidth;
+		final Tiles tiles = createTiles(blueprintWidth, blueprintHeight, image);
+		final int pixelsForMeter = image.getWidth() / blueprintWidth;
 
-		return new PlantBuilder().widthInMeters(plantWidth).heightInMeters(plantHeight).widthInPixels(image.getWidth())
-				.heightInPixels(image.getHeight()).requiredTileList(tiles.requiredTiles).allTileList(tiles.allTiles)
-				.pixelsForMeter(pixelsForMeter).build();
+		return new BlueprintBuilder().widthInMeters(blueprintWidth).heightInMeters(blueprintHeight)
+				.widthInPixels(image.getWidth()).heightInPixels(image.getHeight()).requiredTileList(tiles.requiredTiles)
+				.allTileList(tiles.allTiles).pixelsForMeter(pixelsForMeter).build();
 	}
 
 	private class Tiles {
@@ -47,12 +46,12 @@ public class BlueprintReader {
 	}
 
 	private Tiles createTiles(final int plantWidth, final int plantHeight, final BufferedImage image) {
-		final List<Pixel> activatedPixelList = getActivatedPixels(image);
+		final List<Pixel> activatedPixelList = getRequiredPixels(image);
 
-		final byte tileSizeInMeters = Configs.getInstance().getByte(Configs.TILE_SIZE_IN_METERS);
+		final float tileSizeInMeters = Configs.getInstance().getFloat(Configs.TILE_SIZE_IN_METERS);
 
 		// regra de 3
-		final int tileSizeInPixels = (tileSizeInMeters * image.getWidth()) / plantWidth;
+		final int tileSizeInPixels = (int) ((tileSizeInMeters * image.getWidth()) / plantWidth);
 
 		final Tiles tiles = new Tiles();
 
@@ -91,7 +90,8 @@ public class BlueprintReader {
 		}
 	}
 
-	private List<Pixel> getPixels(final BufferedImage image) {
+	private List<Pixel> getRequiredPixels(final BufferedImage image) {
+		final int requiredAreaColor = getRequiredAreaColor().getRGB();
 		final int height = image.getHeight();
 		final int width = image.getWidth();
 
@@ -99,17 +99,13 @@ public class BlueprintReader {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				final int rgb = image.getRGB(x, y);
-				final Pixel pixel = new Pixel(x, y, rgb);
-				pixelList.add(pixel);
+				if (rgb == requiredAreaColor) {
+					final Pixel pixel = new Pixel(x, y, rgb);
+					pixelList.add(pixel);
+				}
 			}
 		}
 		return pixelList;
-	}
-
-	private List<Pixel> getActivatedPixels(final BufferedImage image) {
-		final Color requiredAreaColor = getRequiredAreaColor();
-		return getPixels(image).stream().filter(pixel -> pixel.color.equals(requiredAreaColor))
-				.collect(Collectors.toList());
 	}
 
 	private Color getRequiredAreaColor() {

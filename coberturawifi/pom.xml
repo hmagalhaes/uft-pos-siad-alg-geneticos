@@ -39,16 +39,19 @@
 					<mainClass>br.eti.hmagalhaes.coberturawifi.CoberturaApplication</mainClass>
 					<arguments>
 						<!-- Arquivo da planta -->
-						<argument>blueprint-marked.png</argument>
+						<argument>IFTO/blueprint - marked.png</argument>
+						
+						<!-- Diretório de saída -->
+						<argument>IFTO/resultado</argument>
 
 						<!-- Largura da planta em metros -->
-						<argument>40</argument>
+						<argument>20</argument>
 
 						<!-- Altura da Planta -->
-						<argument>19</argument>
+						<argument>55</argument>
 
 						<!-- Quantidade de pontos de acesso -->
-						<argument>3</argument>
+						<argument>5</argument>
 
 						<!-- Raio de cobertura do ponto de acesso -->
 						<argument>5</argument>

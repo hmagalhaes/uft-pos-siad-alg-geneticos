@@ -49,4 +49,13 @@ class BestSolutionsHolder {
 		}
 		return true;
 	}
+
+	public double currentBestFitness() {
+		if (bestList.isEmpty()) {
+			return 0;
+		}
+		return bestList.stream().map(solution -> solution.fitness)
+				.collect(Collectors.maxBy((fitness1, fitness2) -> Double.compare(fitness1, fitness2))).get();
+	}
+
 }

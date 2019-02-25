@@ -31,4 +31,8 @@ public class Randomizer {
 		return random.nextDouble();
 	}
 
+	public double nextDouble(final double bound) {
+		return 0 + (bound) * random.nextDouble();
+	}
+
 }

@@ -24,34 +24,34 @@ public class CoberturaApplication {
 		}
 
 		final String blueprintFile = args[0];
-		final int plantWidthInMeters = Integer.parseInt(args[1]);
-		final int plantHeightInMeters = Integer.parseInt(args[2]);
-		final short accessPointCount = Short.parseShort(args[3]);
-		final short accessPointRadiusInMeters = Short.parseShort(args[4]);
+		final String outputFolder = args[1];
+		final int plantWidthInMeters = Integer.parseInt(args[2]);
+		final int plantHeightInMeters = Integer.parseInt(args[3]);
+		final short accessPointCount = Short.parseShort(args[4]);
+		final short accessPointRadiusInMeters = Short.parseShort(args[5]);
 
-		System.out.println("Parâmetros:\nplanta:" + blueprintFile + ", largura: " + plantWidthInMeters + "m, altura: "
-				+ plantHeightInMeters + "m, pontosAcesso: " + accessPointCount + ", raioPontoAcesso: "
-				+ accessPointRadiusInMeters + "m");
+		System.out.println("Parâmetros:\nplanta:" + blueprintFile + ", diretorioSaida: " + outputFolder + ", largura: "
+				+ plantWidthInMeters + "m, altura: " + plantHeightInMeters + "m, pontosAcesso: " + accessPointCount
+				+ ", raioPontoAcesso: " + accessPointRadiusInMeters + "m");
 
-		final long plantStart = System.currentTimeMillis();
+		final long blueprintStart = System.currentTimeMillis();
 		final Blueprint blueprint = BlueprintReader.getInstance().readPlant(blueprintFile, plantWidthInMeters,
 				plantHeightInMeters);
-		System.out.printf("Planta lida em %dms\n", System.currentTimeMillis() - plantStart);
+		System.out.printf("Planta lida em %dms\n", System.currentTimeMillis() - blueprintStart);
 
 		final int accessPointRadiusInPixels = accessPointRadiusInMeters * blueprint.pixelsForMeter;
+		System.out.println("RadioPontoAcesso: " + accessPointRadiusInPixels + "px");
+
 		final long searchStart = System.currentTimeMillis();
 		final List<Layout> layoutList = SolutionFinder.getInstance().findBestMatch(blueprint, accessPointCount,
 				accessPointRadiusInPixels);
 		System.out.printf("Soluções encontradas em %dms\n", System.currentTimeMillis() - searchStart);
 
-		final long outputStart = System.currentTimeMillis();
-		SolutionWriter.getInstance().printSolutions(blueprintFile, layoutList);
-		System.out.printf("Soluções salvas em %dms\n", System.currentTimeMillis() - outputStart);
+		SolutionWriter.getInstance().printSolutions(blueprintFile, layoutList, outputFolder);
 
-		final long gridStart = System.currentTimeMillis();
-		SolutionWriter.getInstance().printGridAllTiles(blueprintFile, blueprint);
-		SolutionWriter.getInstance().printGridSelectedTiles(blueprintFile, blueprint);
-		System.out.printf("Grids salvos em %dms\n", System.currentTimeMillis() - gridStart);
+		SolutionWriter.getInstance().printGridAllTiles(blueprintFile, blueprint, outputFolder);
+		SolutionWriter.getInstance().printGridSelectedTiles(blueprintFile, blueprint, outputFolder);
+
 	}
 
 }

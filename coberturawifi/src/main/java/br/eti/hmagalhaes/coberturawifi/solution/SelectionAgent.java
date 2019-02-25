@@ -2,6 +2,7 @@ package br.eti.hmagalhaes.coberturawifi.solution;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import br.eti.hmagalhaes.coberturawifi.Configs;
 import br.eti.hmagalhaes.coberturawifi.model.Chromosome;
@@ -42,7 +43,9 @@ class SelectionAgent {
 	}
 
 	private Chromosome rollTheRoulette(final List<GeneticSolution> solutionList) {
-		final double rolled = randomizer.nextDoubleFromZeroToOne();
+		final double totalFitness = solutionList.stream()
+				.collect(Collectors.summingDouble(solution -> solution.fitness));
+		final double rolled = randomizer.nextDouble(totalFitness);
 
 		double accumulated = 0;
 		for (GeneticSolution solution : solutionList) {

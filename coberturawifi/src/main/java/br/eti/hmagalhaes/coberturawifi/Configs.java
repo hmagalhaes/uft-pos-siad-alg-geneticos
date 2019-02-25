@@ -11,9 +11,14 @@ public class Configs {
 	public static final String GENERATION_COUNT = "generation.count";
 	public static final String RESULT_SOLUTION_COUNT = "result.solution.count";
 	public static final String RESULT_SOLUTION_FILE_PATTERN = "result.solution.file.pattern";
+	public static final String RESULT_SOLUTION_COVERED_TILES_FILE_PATTERN = "result.solution.tiles.file.pattern";
 	public static final String RESULT_GRID_ALL_FILE_PATTERN = "result.grid.all.file.pattern";
 	public static final String RESULT_GRID_SELECTED_FILE_PATTERN = "result.grid.selected.file.pattern";
 	public static final String RESULT_FILE_FORMAT = "result.file.format";
+	public static final String RESULT_COLOR_GRID = "result.color.grid";
+	public static final String RESULT_COLOR_RADIUS = "result.color.radius";
+	public static final String RESULT_COLOR_CROSS = "result.color.cross";
+
 	public static final String POPULATION_SIZE = "population.size";
 	public static final String POPULATION_RATIO_MUTANT = "population.ratio.mutant";
 	public static final String POPULATION_RATIO_CROSSED = "population.ratio.crossed";

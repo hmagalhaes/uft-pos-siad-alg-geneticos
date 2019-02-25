@@ -1,15 +1,20 @@
 package br.eti.hmagalhaes.coberturawifi.model;
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public class GeneticSolution implements Comparable<GeneticSolution> {
 
 	public final Chromosome chromosome;
 	public final double fitness;
+	public final List<Tile> coveredTileList;
 
-	public GeneticSolution(Chromosome chromosome, double fitness) {
+	public GeneticSolution(Chromosome chromosome, double fitness, List<Tile> coveredTileList) {
 		this.chromosome = chromosome;
 		this.fitness = fitness;
+		this.coveredTileList = coveredTileList == null ? Collections.emptyList()
+				: Collections.unmodifiableList(coveredTileList);
 	}
 
 	@Override
@@ -18,12 +23,17 @@ public class GeneticSolution implements Comparable<GeneticSolution> {
 	}
 
 	public GeneticSolution withChromosome(Chromosome newChromosome) {
-		return new GeneticSolution(newChromosome, this.fitness);
+		return new GeneticSolution(newChromosome, this.fitness, this.coveredTileList);
+	}
+
+	public float coverability(final int totalTilesCount) {
+		return (float) coveredTileList.size() / (float) totalTilesCount;
 	}
 
 	@Override
 	public String toString() {
-		return "GeneticSolution [chromosome=" + chromosome + ", fitness=" + fitness + "]";
+		return "GeneticSolution [chromosome=" + chromosome + ", fitness=" + fitness + ", coveredTiles="
+				+ coveredTileList.size() + "]";
 	}
 
 	@Override
