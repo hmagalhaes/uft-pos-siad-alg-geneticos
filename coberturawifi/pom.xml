@@ -36,7 +36,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.6.0</version>
 				<configuration>
-					<mainClass>br.eti.hmagalhaes.coberturawifi.CoberturaApplication</mainClass>
+					<mainClass>coberturawifi.CoberturaApplication</mainClass>
 					<arguments>
 						<!-- Arquivo da planta -->
 						<argument>IFTO/blueprint - marked.png</argument>
@@ -51,7 +51,7 @@
 						<argument>55</argument>
 
 						<!-- Quantidade de pontos de acesso -->
-						<argument>5</argument>
+						<argument>3</argument>
 
 						<!-- Raio de cobertura do ponto de acesso -->
 						<argument>5</argument>
