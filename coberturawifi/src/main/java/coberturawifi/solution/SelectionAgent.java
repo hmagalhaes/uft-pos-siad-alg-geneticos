@@ -22,7 +22,7 @@ class SelectionAgent {
 	private SelectionAgent() {
 		this.populationSize = configs.getShort(Configs.POPULATION_SIZE);
 		this.selectedPopulationSize = (short) (populationSize - EliteAgent.getInstance().elitePopulationSize
-				- MutationAgent.getInstance().mutantPopulationSize - CrossingAgent.getInstance().crossedPopulationSize);
+				- MutationAgent.getInstance().getMutantPopulationSize() - CrossingAgent.getInstance().getCrossedPopulationSize());
 		System.out.println("SelectionAgent => selectedPopSize: " + this.selectedPopulationSize);
 	}
 

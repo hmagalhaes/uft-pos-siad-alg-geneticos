@@ -10,6 +10,14 @@ public class Coordinates {
 		this.y = y;
 	}
 
+	public Coordinates withX(int x) {
+		return new Coordinates(x, this.y);
+	}
+
+	public Coordinates withY(int y) {
+		return new Coordinates(this.x, y);
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

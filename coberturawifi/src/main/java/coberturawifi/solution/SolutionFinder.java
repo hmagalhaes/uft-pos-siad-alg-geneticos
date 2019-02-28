@@ -5,16 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import coberturawifi.Configs;
-import coberturawifi.model.BitsChromosome;
 import coberturawifi.model.Blueprint;
 import coberturawifi.model.Chromosome;
 import coberturawifi.model.GeneticSolution;
 import coberturawifi.model.Layout;
-import coberturawifi.solution.bitsrepresentation.BitsCrossingAgent;
-import coberturawifi.solution.bitsrepresentation.BitsInitialPopGenerator;
-import coberturawifi.solution.bitsrepresentation.BitsMutationAgent;
-import coberturawifi.solution.realrepresentation.IntsCrossingAgent;
-import coberturawifi.solution.realrepresentation.IntsInitialPopGenerator;
 
 public class SolutionFinder {
 
@@ -28,29 +22,17 @@ public class SolutionFinder {
 	private final short resultSolutionCount;
 
 	private final Configs configs = Configs.getInstance();
-	private final MutationAgent mutationAgent;
+	private final MutationAgent mutationAgent = MutationAgent.getInstance();
 	private final EliteAgent eliteAgent = EliteAgent.getInstance();
-	private final CrossingAgent crossingAgent;
-	private final InitialPopulationGenerator initialPopGenerator;
-	private final SelectionAgent selectionAgent= SelectionAgent.getInstance();
+	private final CrossingAgent crossingAgent = CrossingAgent.getInstance();
+	private final InitialPopulationGenerator initialPopGenerator = InitialPopulationGenerator.getInstance();
+	private final SelectionAgent selectionAgent = SelectionAgent.getInstance();
 	private final FitnessAgent fitnessAgent = FitnessAgent.getInstance();
 
 	private SolutionFinder() {
 		this.generationCount = configs.getShort(Configs.GENERATION_COUNT);
 		this.resultSolutionCount = configs.getShort(Configs.RESULT_SOLUTION_COUNT);
 		this.populationSize = configs.getShort(Configs.POPULATION_SIZE);
-
-		final String representation = Configs.getInstance().getString(Configs.REPRESENTATION_TYPE);
-		if (BITS_TYPE.equals(representation)) {
-			this.initialPopGenerator = BitsInitialPopGenerator.getInstance();
-			this.crossingAgent = BitsCrossingAgent.getInstance();
-			this.mutationAgent = BitsMutationAgent.getInstance();
-		} else if (INTS_REPRESENTATION.equals(representation)) {
-			this.initialPopGenerator = IntsInitialPopGenerator.getInstance();
-			this.crossingAgent = IntsCrossingAgent.getInstance();
-		} else {
-			throw new IllegalArgumentException("Bad representation => " + representation);
-		}
 
 		System.out.println("BitsSolutionFinder started => generationCount: " + generationCount + ", populationSize: "
 				+ populationSize + ", resultSolutionCount: " + resultSolutionCount);
@@ -117,18 +99,18 @@ public class SolutionFinder {
 		return solutionList.stream().collect(Collectors.averagingDouble(solution -> solution.fitness)).floatValue();
 	}
 
-	private List<BitsChromosome> createNewGeneration(final List<BitsChromosome> population,
+	private List<? extends Chromosome> createNewGeneration(final List<? extends Chromosome> population,
 			final List<GeneticSolution<? extends Chromosome>> solutionList) {
 
-		final List<BitsChromosome> eliteList = eliteAgent.findPopulationElite(solutionList);
-		final List<BitsChromosome> crossedList = crossingAgent.crossPopulation(population);
-		final List<BitsChromosome> mutantList = mutationAgent.mutatePopulation(population);
-		final List<BitsChromosome> selectedList = selectionAgent.select(solutionList);
+		final List<? extends Chromosome> eliteList = eliteAgent.findPopulationElite(solutionList);
+		final List<? extends Chromosome> crossedList = crossingAgent.crossPopulation(population);
+		final List<? extends Chromosome> mutantList = mutationAgent.mutatePopulation(population);
+		final List<? extends Chromosome> selectedList = selectionAgent.select(solutionList);
 
 //		System.out.println("elites: " + eliteList.size() + ", crossed: " + crossedList.size() + ", mutant: "
 //				+ mutantList.size() + ", selected: " + selectedList.size());
 
-		final List<BitsChromosome> newPopulation = new ArrayList<>(populationSize);
+		final List<Chromosome> newPopulation = new ArrayList<>(populationSize);
 		newPopulation.addAll(eliteList);
 		newPopulation.addAll(crossedList);
 		newPopulation.addAll(mutantList);

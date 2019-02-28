@@ -5,15 +5,15 @@ import java.util.List;
 
 import coberturawifi.Configs;
 import coberturawifi.model.BitsChromosome;
+import coberturawifi.model.Chromosome;
 import coberturawifi.solution.CrossingAgent;
 import coberturawifi.util.Randomizer;
 
-public class BitsCrossingAgent implements CrossingAgent {
+public class BitsCrossingAgent extends CrossingAgent {
 
 	private static BitsCrossingAgent instance;
 
-	public final short crossedPopulationSize;
-
+	private final short crossedPopulationSize;
 	private final Configs configs = Configs.getInstance();
 	private final Randomizer randomizer = Randomizer.getInstance();
 	private final short populationSize;
@@ -46,14 +46,19 @@ public class BitsCrossingAgent implements CrossingAgent {
 		return instance;
 	}
 
-	public List<BitsChromosome> crossPopulation(final List<BitsChromosome> population) {
+	public short getCrossedPopulationSize() {
+		return crossedPopulationSize;
+	}
+
+	@Override
+	public List<BitsChromosome> crossPopulation(final List<? extends Chromosome> population) {
 		final List<BitsChromosome> crossedPopulation = new ArrayList<>(crossedPopulationSize);
 		while (crossedPopulation.size() < crossedPopulationSize) {
 			final int fatherIndex = randomizer.nextInt(populationSize);
 			final int motherIndex = randomizer.nextInt(populationSize);
 
-			final BitsChromosome father = population.get(fatherIndex);
-			final BitsChromosome mother = population.get(motherIndex);
+			final BitsChromosome father = (BitsChromosome) population.get(fatherIndex);
+			final BitsChromosome mother = (BitsChromosome) population.get(motherIndex);
 
 			final BitsChromosome firstBorn = crossingStrategy.cross(father, mother);
 			crossedPopulation.add(firstBorn);

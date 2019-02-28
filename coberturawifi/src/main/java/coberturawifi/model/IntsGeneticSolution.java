@@ -2,9 +2,9 @@ package coberturawifi.model;
 
 import java.util.List;
 
-public class IntsGeneticSolution extends GeneticSolution<IntsChromosome> {
+public class IntsGeneticSolution extends GeneticSolution<RealChromosome> {
 
-	public IntsGeneticSolution(IntsChromosome chromosome, double fitness, List<Tile> coveredTileList) {
+	public IntsGeneticSolution(RealChromosome chromosome, double fitness, List<Tile> coveredTileList) {
 		super(chromosome, fitness, coveredTileList);
 	}
 

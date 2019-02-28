@@ -10,7 +10,7 @@ import coberturawifi.model.Coordinates;
 import coberturawifi.solution.InitialPopulationGenerator;
 import coberturawifi.util.Randomizer;
 
-public class BitsInitialPopGenerator implements InitialPopulationGenerator {
+public class BitsInitialPopGenerator extends InitialPopulationGenerator {
 
 	private static BitsInitialPopGenerator instance;
 

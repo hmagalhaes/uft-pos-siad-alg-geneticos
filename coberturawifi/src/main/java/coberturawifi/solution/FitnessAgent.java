@@ -25,12 +25,13 @@ public class FitnessAgent {
 		return instance;
 	}
 
-	public <T extends Chromosome> List<GeneticSolution<T>> calculateFitness(final Blueprint plant,
-			final List<T> population, final int accessPointRadiusInPixels) {
+	public List<GeneticSolution<? extends Chromosome>> calculateFitness(final Blueprint plant,
+			final List<? extends Chromosome> population, final int accessPointRadiusInPixels) {
 
-		final List<GeneticSolution<T>> solutionList = new ArrayList<>(population.size());
-		for (T chromosome : population) {
-			final GeneticSolution<T> solution = calculateFitness(plant, chromosome, accessPointRadiusInPixels);
+		final List<GeneticSolution<? extends Chromosome>> solutionList = new ArrayList<>(population.size());
+		for (Chromosome chromosome : population) {
+			final GeneticSolution<? extends Chromosome> solution = calculateFitness(plant, chromosome,
+					accessPointRadiusInPixels);
 			solutionList.add(solution);
 		}
 		return solutionList;

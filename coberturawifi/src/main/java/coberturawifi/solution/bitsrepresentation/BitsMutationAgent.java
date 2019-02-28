@@ -5,12 +5,13 @@ import java.util.List;
 
 import coberturawifi.Configs;
 import coberturawifi.model.BitsChromosome;
+import coberturawifi.model.Blueprint;
 import coberturawifi.model.Chromosome;
 import coberturawifi.solution.MutationAgent;
 import coberturawifi.util.BitList;
 import coberturawifi.util.Randomizer;
 
-public class BitsMutationAgent implements MutationAgent {
+public class BitsMutationAgent extends MutationAgent {
 
 	private static BitsMutationAgent instance;
 
@@ -18,8 +19,7 @@ public class BitsMutationAgent implements MutationAgent {
 	private final Randomizer randomizer = Randomizer.getInstance();
 	private final short populationSize;
 	private final float mutationRatio;
-
-	final short mutantPopulationSize;
+	private final short mutantPopulationSize;
 
 	private BitsMutationAgent() {
 		this.populationSize = configs.getShort(Configs.POPULATION_SIZE);
@@ -40,7 +40,13 @@ public class BitsMutationAgent implements MutationAgent {
 		return instance;
 	}
 
-	public List<? extends Chromosome> mutatePopulation(final List<? extends Chromosome> population) {
+	public short getMutantPopulationSize() {
+		return mutantPopulationSize;
+	}
+
+	public List<? extends Chromosome> mutatePopulation(final List<? extends Chromosome> population,
+			final Blueprint blueprin) {
+
 		final short mutationBits = calcMutationBits(population);
 
 		final List<BitsChromosome> mutatedPop = new ArrayList<>(mutantPopulationSize);
