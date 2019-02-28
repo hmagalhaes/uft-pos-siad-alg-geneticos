@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import coberturawifi.model.BitsChromosome;
 import coberturawifi.model.Coordinates;
+import coberturawifi.solution.bitsrepresentation.BitsChromosome;
 
 public class ChromosomeTest {
 

@@ -6,7 +6,6 @@ import java.util.List;
 import coberturawifi.Configs;
 import coberturawifi.model.Chromosome;
 import coberturawifi.model.Coordinates;
-import coberturawifi.model.RealChromosome;
 import coberturawifi.solution.CrossingAgent;
 import coberturawifi.util.Randomizer;
 
@@ -41,8 +40,8 @@ public class RealCrossingAgent extends CrossingAgent {
 	}
 
 	@Override
-	public List<RealChromosome> crossPopulation(final List<? extends Chromosome> population) {
-		final List<RealChromosome> crossedPopulation = new ArrayList<>(crossedPopulationSize);
+	public List<Chromosome> crossPopulation(final List<Chromosome> population) {
+		final List<Chromosome> crossedPopulation = new ArrayList<>(crossedPopulationSize);
 		while (crossedPopulation.size() < crossedPopulationSize) {
 			final int fatherIndex = randomizer.nextInt(populationSize);
 			final int motherIndex = randomizer.nextInt(populationSize);
@@ -68,11 +67,11 @@ public class RealCrossingAgent extends CrossingAgent {
 		final List<Coordinates> motherCoords = mother.getCoordinateList();
 
 		final short chromosomeSize = (short) fatherCoords.size();
-		final short chromosomeHalfSize = (short) (chromosomeSize / 2);
+		final short fatherHalfSize = (short) (chromosomeSize / 2);
+		final short motherHalfSize = (short) (chromosomeSize - fatherHalfSize);
+		final short motherHalfIndex = (short) (chromosomeSize - motherHalfSize);
 
-		final int motherHalfIndex = chromosomeSize - chromosomeHalfSize;
-
-		final List<Coordinates> fatherHalf = fatherCoords.subList(0, chromosomeHalfSize);
+		final List<Coordinates> fatherHalf = fatherCoords.subList(0, fatherHalfSize);
 		final List<Coordinates> motherHalf = motherCoords.subList(motherHalfIndex, chromosomeSize);
 
 		final List<Coordinates> childCoords = new ArrayList<>(chromosomeSize);

@@ -49,8 +49,8 @@ public class CoberturaApplication {
 
 		SolutionWriter.getInstance().printSolutions(blueprintFile, layoutList, outputFolder);
 
-		SolutionWriter.getInstance().printGridAllTiles(blueprintFile, blueprint, outputFolder);
-		SolutionWriter.getInstance().printGridSelectedTiles(blueprintFile, blueprint, outputFolder);
+//		SolutionWriter.getInstance().printGridAllTiles(blueprintFile, blueprint, outputFolder);
+//		SolutionWriter.getInstance().printGridSelectedTiles(blueprintFile, blueprint, outputFolder);
 
 	}
 

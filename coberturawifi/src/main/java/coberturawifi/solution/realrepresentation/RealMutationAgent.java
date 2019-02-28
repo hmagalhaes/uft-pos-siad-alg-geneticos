@@ -7,7 +7,6 @@ import coberturawifi.Configs;
 import coberturawifi.model.Blueprint;
 import coberturawifi.model.Chromosome;
 import coberturawifi.model.Coordinates;
-import coberturawifi.model.RealChromosome;
 import coberturawifi.solution.MutationAgent;
 import coberturawifi.util.Randomizer;
 
@@ -44,13 +43,12 @@ public class RealMutationAgent extends MutationAgent {
 		return mutantPopulationSize;
 	}
 
-	public List<? extends Chromosome> mutatePopulation(final List<? extends Chromosome> population,
-			final Blueprint blueprint) {
+	public List<Chromosome> mutatePopulation(final List<Chromosome> population, final Blueprint blueprint) {
 
 		final short mutationPoints = calcMutationItems(population);
-		System.out.println("Mutation points (coords): " + mutationPoints);
+		System.out.println("Mutated field count per chromosome: " + mutationPoints);
 
-		final List<RealChromosome> mutatedPop = new ArrayList<>(mutantPopulationSize);
+		final List<Chromosome> mutatedPop = new ArrayList<>(mutantPopulationSize);
 		for (int i = 0; i < mutantPopulationSize; i++) {
 			final int mutantIndex = randomizer.nextInt(populationSize);
 			final RealChromosome healty = (RealChromosome) population.get(mutantIndex);
@@ -61,11 +59,11 @@ public class RealMutationAgent extends MutationAgent {
 		return mutatedPop;
 	}
 
-	private RealChromosome mutateChromosome(final RealChromosome healthy, final short mutationBits,
+	private RealChromosome mutateChromosome(final RealChromosome healthy, final short mutationPoints,
 			final Blueprint blueprint) {
 
 		final List<Coordinates> coordsList = healthy.getCoordinateList();
-		for (short mutationCount = 0; mutationCount < mutationBits; mutationCount++) {
+		for (short mutationCount = 0; mutationCount < mutationPoints; mutationCount++) {
 			final short coordIndex = randomizer.nextShort(healthy.getMaxItemCount());
 			final Coordinates healthyCoords = healthy.getCoordinateList().get(coordIndex);
 			final Coordinates mutantCoords = generateCoord(healthyCoords, blueprint);
@@ -90,7 +88,9 @@ public class RealMutationAgent extends MutationAgent {
 
 	private short calcMutationItems(final List<? extends Chromosome> population) {
 		final RealChromosome anyChromosome = (RealChromosome) population.get(0);
-		final short totalItems = ((RealChromosome) anyChromosome).getMaxItemCount();
+		final short totalItems = (short) (((RealChromosome) anyChromosome).getMaxItemCount() * 2);
+		// 2 campos por coordenadas
+		// TODO organizar isso em constante com significado
 
 		final short mutantItems = (short) Math.round(totalItems * mutationRatio);
 		return (short) Math.max(1, mutantItems);

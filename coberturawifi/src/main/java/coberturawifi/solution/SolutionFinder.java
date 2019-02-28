@@ -12,9 +12,6 @@ import coberturawifi.model.Layout;
 
 public class SolutionFinder {
 
-	private static final String BITS_TYPE = "bits";
-	private static final String INTS_REPRESENTATION = "ints";
-
 	private static SolutionFinder instance;
 
 	private final short generationCount;
@@ -50,11 +47,11 @@ public class SolutionFinder {
 
 		final BestSolutionsHolder bestSolutionsHolder = new BestSolutionsHolder(resultSolutionCount);
 
-		List<? extends Chromosome> population = initialPopGenerator.generatePopulation(blueprint, accessPointCount);
+		List<Chromosome> population = initialPopGenerator.generatePopulation(blueprint, accessPointCount);
 		int generation = 0;
 		while (true) {
-			final List<GeneticSolution<? extends Chromosome>> solutionList = fitnessAgent.calculateFitness(blueprint,
-					population, accessPointRadiusInPixels);
+			final List<GeneticSolution> solutionList = fitnessAgent.calculateFitness(blueprint, population,
+					accessPointRadiusInPixels);
 			System.out.printf("Buscando => geração: %d / %d, melhorLocal: %f, mediaLocal: %f, melhorGlobal: %f\n",
 					generation + 1, this.generationCount, getBestFitness(solutionList), getAverageFitness(solutionList),
 					bestSolutionsHolder.currentBestFitness());
@@ -69,17 +66,16 @@ public class SolutionFinder {
 				break;
 			}
 
-			population = createNewGeneration(population, solutionList);
+			population = createNewGeneration(population, solutionList, blueprint);
 			generation++;
 		}
 
 		System.out.println("Global best:");
-		final List<GeneticSolution<? extends Chromosome>> globalBestSolutionList = bestSolutionsHolder
-				.getBestSolutions();
+		final List<GeneticSolution> globalBestSolutionList = bestSolutionsHolder.getBestSolutions();
 		final int totalRequiredTiles = blueprint.requiredTileList.size();
 
 		final List<Layout> layoutList = new ArrayList<>(globalBestSolutionList.size());
-		for (GeneticSolution<? extends Chromosome> solution : globalBestSolutionList) {
+		for (GeneticSolution solution : globalBestSolutionList) {
 			System.out.println("--- coverability: " + solution.coverability(totalRequiredTiles) + ", requiredTiles: "
 					+ totalRequiredTiles + ", solution: " + solution);
 
@@ -89,23 +85,23 @@ public class SolutionFinder {
 		return layoutList;
 	}
 
-	private float getBestFitness(List<GeneticSolution<? extends Chromosome>> solutionList) {
+	private float getBestFitness(List<GeneticSolution> solutionList) {
 		return solutionList.stream().map(solution -> solution.fitness)
 				.collect(Collectors.maxBy((fitness1, fitness2) -> Double.compare(fitness1, fitness2))).get()
 				.floatValue();
 	}
 
-	private float getAverageFitness(List<GeneticSolution<? extends Chromosome>> solutionList) {
+	private float getAverageFitness(List<GeneticSolution> solutionList) {
 		return solutionList.stream().collect(Collectors.averagingDouble(solution -> solution.fitness)).floatValue();
 	}
 
-	private List<? extends Chromosome> createNewGeneration(final List<? extends Chromosome> population,
-			final List<GeneticSolution<? extends Chromosome>> solutionList) {
+	private List<Chromosome> createNewGeneration(final List<Chromosome> population,
+			final List<GeneticSolution> solutionList, final Blueprint blueprint) {
 
-		final List<? extends Chromosome> eliteList = eliteAgent.findPopulationElite(solutionList);
-		final List<? extends Chromosome> crossedList = crossingAgent.crossPopulation(population);
-		final List<? extends Chromosome> mutantList = mutationAgent.mutatePopulation(population);
-		final List<? extends Chromosome> selectedList = selectionAgent.select(solutionList);
+		final List<Chromosome> eliteList = eliteAgent.findPopulationElite(solutionList);
+		final List<Chromosome> crossedList = crossingAgent.crossPopulation(population);
+		final List<Chromosome> mutantList = mutationAgent.mutatePopulation(population, blueprint);
+		final List<Chromosome> selectedList = selectionAgent.select(solutionList);
 
 //		System.out.println("elites: " + eliteList.size() + ", crossed: " + crossedList.size() + ", mutant: "
 //				+ mutantList.size() + ", selected: " + selectedList.size());

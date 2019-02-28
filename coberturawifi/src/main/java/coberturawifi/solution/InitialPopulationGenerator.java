@@ -32,6 +32,6 @@ public abstract class InitialPopulationGenerator {
 		}
 	}
 
-	public abstract List<? extends Chromosome> generatePopulation(final Blueprint plant, final short accessPointCount);
+	public abstract List<Chromosome> generatePopulation(final Blueprint plant, final short accessPointCount);
 
 }

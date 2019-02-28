@@ -22,7 +22,8 @@ class SelectionAgent {
 	private SelectionAgent() {
 		this.populationSize = configs.getShort(Configs.POPULATION_SIZE);
 		this.selectedPopulationSize = (short) (populationSize - EliteAgent.getInstance().elitePopulationSize
-				- MutationAgent.getInstance().getMutantPopulationSize() - CrossingAgent.getInstance().getCrossedPopulationSize());
+				- MutationAgent.getInstance().getMutantPopulationSize()
+				- CrossingAgent.getInstance().getCrossedPopulationSize());
 		System.out.println("SelectionAgent => selectedPopSize: " + this.selectedPopulationSize);
 	}
 
@@ -33,7 +34,7 @@ class SelectionAgent {
 		return instance;
 	}
 
-	public List<? extends Chromosome> select(final List<GeneticSolution<? extends Chromosome>> solutionList) {
+	public List<Chromosome> select(final List<GeneticSolution> solutionList) {
 
 		final List<Chromosome> selectedPopulation = new ArrayList<>(selectedPopulationSize);
 		for (short i = 0; i < selectedPopulationSize; i++) {
@@ -43,13 +44,13 @@ class SelectionAgent {
 		return selectedPopulation;
 	}
 
-	private Chromosome rollTheRoulette(final List<GeneticSolution<? extends Chromosome>> solutionList) {
+	private Chromosome rollTheRoulette(final List<GeneticSolution> solutionList) {
 		final double totalFitness = solutionList.stream()
 				.collect(Collectors.summingDouble(solution -> solution.fitness));
 		final double rolled = randomizer.nextDouble(totalFitness);
 
 		double accumulated = 0;
-		for (GeneticSolution<? extends Chromosome> solution : solutionList) {
+		for (GeneticSolution solution : solutionList) {
 			accumulated += solution.fitness;
 			if (accumulated >= rolled) {
 				return solution.chromosome;

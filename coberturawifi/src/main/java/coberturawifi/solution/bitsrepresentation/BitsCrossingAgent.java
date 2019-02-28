@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import coberturawifi.Configs;
-import coberturawifi.model.BitsChromosome;
 import coberturawifi.model.Chromosome;
 import coberturawifi.solution.CrossingAgent;
 import coberturawifi.util.Randomizer;
@@ -51,8 +50,8 @@ public class BitsCrossingAgent extends CrossingAgent {
 	}
 
 	@Override
-	public List<BitsChromosome> crossPopulation(final List<? extends Chromosome> population) {
-		final List<BitsChromosome> crossedPopulation = new ArrayList<>(crossedPopulationSize);
+	public List<Chromosome> crossPopulation(final List<Chromosome> population) {
+		final List<Chromosome> crossedPopulation = new ArrayList<>(crossedPopulationSize);
 		while (crossedPopulation.size() < crossedPopulationSize) {
 			final int fatherIndex = randomizer.nextInt(populationSize);
 			final int motherIndex = randomizer.nextInt(populationSize);

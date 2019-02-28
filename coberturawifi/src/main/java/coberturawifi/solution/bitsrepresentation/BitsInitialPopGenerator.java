@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import coberturawifi.Configs;
-import coberturawifi.model.BitsChromosome;
 import coberturawifi.model.Blueprint;
+import coberturawifi.model.Chromosome;
 import coberturawifi.model.Coordinates;
 import coberturawifi.solution.InitialPopulationGenerator;
 import coberturawifi.util.Randomizer;
@@ -28,9 +28,9 @@ public class BitsInitialPopGenerator extends InitialPopulationGenerator {
 		return instance;
 	}
 
-	public List<BitsChromosome> generatePopulation(final Blueprint plant, final short accessPointCount) {
+	public List<Chromosome> generatePopulation(final Blueprint plant, final short accessPointCount) {
 
-		final List<BitsChromosome> population = new ArrayList<>(populationSize);
+		final List<Chromosome> population = new ArrayList<>(populationSize);
 		for (short i = 0; i < populationSize; i++) {
 			final BitsChromosome chromosome = generateChromosome(plant, accessPointCount);
 			population.add(chromosome);

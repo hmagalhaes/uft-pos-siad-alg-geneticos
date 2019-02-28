@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import coberturawifi.model.Chromosome;
 import coberturawifi.model.GeneticSolution;
 
 public class BestSolutionsHolder {
 
-	private final List<GeneticSolution<? extends Chromosome>> bestList;
+	private final List<GeneticSolution> bestList;
 	private final short solutionsLimit;
 
 	public BestSolutionsHolder(short solutionsLimit) {
@@ -17,21 +16,20 @@ public class BestSolutionsHolder {
 		this.bestList = new ArrayList<>(solutionsLimit);
 	}
 
-	public void checkForBetter(final List<GeneticSolution<? extends Chromosome>> candidateList) {
+	public void checkForBetter(final List<GeneticSolution> candidateList) {
 
-		final List<GeneticSolution<? extends Chromosome>> allSolutions = new ArrayList<>(
-				bestList.size() + candidateList.size());
+		final List<GeneticSolution> allSolutions = new ArrayList<>(bestList.size() + candidateList.size());
 		allSolutions.addAll(bestList);
 		allSolutions.addAll(candidateList);
 
-		final List<GeneticSolution<? extends Chromosome>> sortedSolutions = allSolutions.stream()
+		final List<GeneticSolution> sortedSolutions = allSolutions.stream()
 				.sorted(GeneticSolution.getBestFitnessComparator()).collect(Collectors.toList());
 
 		bestList.clear();
 
 //		System.out.println("Melhores soluções globais:");
 		for (short i = 0; bestList.size() < solutionsLimit && i < sortedSolutions.size(); i++) {
-			final GeneticSolution<? extends Chromosome> candidate = sortedSolutions.get(i);
+			final GeneticSolution candidate = sortedSolutions.get(i);
 			if (isNewSolution(candidate)) {
 				bestList.add(candidate);
 //				System.out.println("--- " + candidate.fitness);
@@ -39,12 +37,12 @@ public class BestSolutionsHolder {
 		}
 	}
 
-	public List<GeneticSolution<? extends Chromosome>> getBestSolutions() {
+	public List<GeneticSolution> getBestSolutions() {
 		return new ArrayList<>(bestList);
 	}
 
-	private boolean isNewSolution(final GeneticSolution<? extends Chromosome> candidate) {
-		for (GeneticSolution<? extends Chromosome> best : bestList) {
+	private boolean isNewSolution(final GeneticSolution candidate) {
+		for (GeneticSolution best : bestList) {
 			if (best.equals(candidate)) {
 				return false;
 			}

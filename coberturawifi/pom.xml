@@ -51,10 +51,10 @@
 						<argument>55</argument>
 
 						<!-- Quantidade de pontos de acesso -->
-						<argument>3</argument>
+						<argument>4</argument>
 
 						<!-- Raio de cobertura do ponto de acesso -->
-						<argument>7</argument>
+						<argument>5</argument>
 					</arguments>
 				</configuration>
 			</plugin>

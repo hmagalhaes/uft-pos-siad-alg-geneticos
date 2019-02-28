@@ -13,7 +13,7 @@ public class Layout {
 		this.coveredTileList = coveredTileList;
 	}
 
-	public static Layout of(final GeneticSolution<? extends Chromosome> geneticSolution, final int rangeRadiusInPixels) {
+	public static Layout of(final GeneticSolution geneticSolution, final int rangeRadiusInPixels) {
 		final List<Coordinates> coordsList = geneticSolution.chromosome.getCoordinateList();
 
 		final List<AccessPoint> apList = new ArrayList<>(coordsList.size());

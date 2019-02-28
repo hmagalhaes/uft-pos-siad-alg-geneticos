@@ -33,16 +33,16 @@ public class EliteAgent {
 		return instance;
 	}
 
-	public <T extends Chromosome> List<T> findPopulationElite(final List<GeneticSolution<T>> solutionList) {
+	public List<Chromosome> findPopulationElite(final List<GeneticSolution> solutionList) {
 
-		final List<GeneticSolution<T>> sortedSolutions = solutionList.stream()
+		final List<GeneticSolution> sortedSolutions = solutionList.stream()
 				.sorted(GeneticSolution.getBestFitnessComparator()).collect(Collectors.toList());
 
 //		System.out.println("Generation elite:");
-		final List<T> eliteList = new ArrayList<>(elitePopulationSize);
+		final List<Chromosome> eliteList = new ArrayList<>(elitePopulationSize);
 		for (int i = 0; i < elitePopulationSize; i++) {
-			final GeneticSolution<T> solution = sortedSolutions.get(i);
-			final T elite = solution.chromosome;
+			final GeneticSolution solution = sortedSolutions.get(i);
+			final Chromosome elite = solution.chromosome;
 
 			eliteList.add(elite);
 //			System.out.println("--- " + solution);

@@ -1,6 +1,5 @@
 package coberturawifi.solution.bitsrepresentation;
 
-import coberturawifi.model.BitsChromosome;
 import coberturawifi.util.BitList;
 
 class BitsCrossingHalfByHalfStrategy implements BitsCrossingStrategy {

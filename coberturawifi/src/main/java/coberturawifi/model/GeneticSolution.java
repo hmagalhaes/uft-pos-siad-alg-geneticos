@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class GeneticSolution<T extends Chromosome> implements Comparable<GeneticSolution<T>> {
+public class GeneticSolution implements Comparable<GeneticSolution> {
 
-	public final T chromosome;
+	public final Chromosome chromosome;
 	public final double fitness;
 	public final List<Tile> coveredTileList;
 
-	public GeneticSolution(T chromosome, double fitness, List<Tile> coveredTileList) {
+	public GeneticSolution(Chromosome chromosome, double fitness, List<Tile> coveredTileList) {
 		this.chromosome = chromosome;
 		this.fitness = fitness;
 		this.coveredTileList = coveredTileList == null ? Collections.emptyList()
@@ -18,12 +18,12 @@ public class GeneticSolution<T extends Chromosome> implements Comparable<Genetic
 	}
 
 	@Override
-	public int compareTo(GeneticSolution<T> other) {
+	public int compareTo(GeneticSolution other) {
 		return Double.compare(fitness, other.fitness);
 	}
 
-	public GeneticSolution<T> withChromosome(T newChromosome) {
-		return new GeneticSolution<T>(newChromosome, this.fitness, this.coveredTileList);
+	public GeneticSolution withChromosome(Chromosome newChromosome) {
+		return new GeneticSolution(newChromosome, this.fitness, this.coveredTileList);
 	}
 
 	public float coverability(final int totalTilesCount) {
@@ -55,7 +55,7 @@ public class GeneticSolution<T extends Chromosome> implements Comparable<Genetic
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GeneticSolution<?> other = (GeneticSolution<?>) obj;
+		GeneticSolution other = (GeneticSolution) obj;
 		if (Double.doubleToLongBits(fitness) != Double.doubleToLongBits(other.fitness))
 			return false;
 		if (chromosome == null) {
@@ -66,7 +66,7 @@ public class GeneticSolution<T extends Chromosome> implements Comparable<Genetic
 		return true;
 	}
 
-	public static Comparator<GeneticSolution<?>> getBestFitnessComparator() {
+	public static Comparator<GeneticSolution> getBestFitnessComparator() {
 		return (solution1, solution2) -> Double.compare(solution2.fitness, solution1.fitness);
 	}
 

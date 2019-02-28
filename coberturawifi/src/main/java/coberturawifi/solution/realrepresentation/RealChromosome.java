@@ -1,25 +1,37 @@
-package coberturawifi.model;
+package coberturawifi.solution.realrepresentation;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import coberturawifi.model.Chromosome;
+import coberturawifi.model.Coordinates;
+
 public class RealChromosome extends Chromosome {
 
 	private final List<Coordinates> coordinatesList;
 
-	public RealChromosome(short accessPointCount, List<Coordinates> intList) {
+	public RealChromosome(short accessPointCount, List<Coordinates> coordinatesList) {
 		super(accessPointCount);
-		this.coordinatesList = new ArrayList<>(intList);
+		this.coordinatesList = fixCoordsList(coordinatesList);
 	}
 
 	public RealChromosome(short accessPointCount) {
 		super(accessPointCount);
-		this.coordinatesList = new ArrayList<>(getMaxItemCount());
+		this.coordinatesList = fixCoordsList(Collections.emptyList());
+	}
+
+	private List<Coordinates> fixCoordsList(final List<Coordinates> coordinatesList) {
+		final List<Coordinates> fixedList = new ArrayList<>(coordinatesList);
+		while (fixedList.size() < getMaxItemCount()) {
+			fixedList.add(null);
+		}
+		return fixedList;
 	}
 
 	public static short getMaxItemCount(short accessPointCount) {
-		return (short) (accessPointCount * CHROMOSOME_ATTRIBUTE_COUNT);
+//		return (short) (accessPointCount * CHROMOSOME_ATTRIBUTE_COUNT);
+		return accessPointCount;
 	}
 
 	public short getMaxItemCount() {
@@ -43,7 +55,7 @@ public class RealChromosome extends Chromosome {
 		return coordinatesList.get(accessPointIndex);
 	}
 
-	public List<Coordinates> getInts() {
+	public List<Coordinates> getCoordinates() {
 		return Collections.unmodifiableList(coordinatesList);
 	}
 

@@ -1,8 +1,10 @@
-package coberturawifi.model;
+package coberturawifi.solution.bitsrepresentation;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import coberturawifi.model.Chromosome;
+import coberturawifi.model.Coordinates;
 import coberturawifi.util.BitList;
 
 public class BitsChromosome extends Chromosome {

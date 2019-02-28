@@ -2,8 +2,8 @@ package coberturawifi.solution;
 
 import org.junit.Test;
 
-import coberturawifi.model.BitsChromosome;
 import coberturawifi.model.Coordinates;
+import coberturawifi.solution.bitsrepresentation.BitsChromosome;
 import coberturawifi.solution.bitsrepresentation.BitsCrossingHalfByHalfStrategy;
 
 public class CrossingHalfByHalfStrategyTest {

@@ -31,7 +31,7 @@ public abstract class CrossingAgent {
 		}
 	}
 
-	public abstract List<? extends Chromosome> crossPopulation(List<? extends Chromosome> population);
+	public abstract List<Chromosome> crossPopulation(List<Chromosome> population);
 
 	public abstract short getCrossedPopulationSize();
 

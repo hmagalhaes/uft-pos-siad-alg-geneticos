@@ -25,19 +25,18 @@ public class FitnessAgent {
 		return instance;
 	}
 
-	public List<GeneticSolution<? extends Chromosome>> calculateFitness(final Blueprint plant,
+	public List<GeneticSolution> calculateFitness(final Blueprint blueprint,
 			final List<? extends Chromosome> population, final int accessPointRadiusInPixels) {
 
-		final List<GeneticSolution<? extends Chromosome>> solutionList = new ArrayList<>(population.size());
+		final List<GeneticSolution> solutionList = new ArrayList<>(population.size());
 		for (Chromosome chromosome : population) {
-			final GeneticSolution<? extends Chromosome> solution = calculateFitness(plant, chromosome,
-					accessPointRadiusInPixels);
+			final GeneticSolution solution = calculateFitness(blueprint, chromosome, accessPointRadiusInPixels);
 			solutionList.add(solution);
 		}
 		return solutionList;
 	}
 
-	private <T extends Chromosome> GeneticSolution<T> calculateFitness(final Blueprint blueprint, final T chromosome,
+	private GeneticSolution calculateFitness(final Blueprint blueprint, final Chromosome chromosome,
 			final int accessPointRadiusInPixels) {
 
 		final List<Tile> coveredTileList = new ArrayList<>();
@@ -52,7 +51,7 @@ public class FitnessAgent {
 //		System.out.println("fitness: " + fitness + ", tileshit: " + tilesHit + ", requiredTiles: "
 //				+ blueprint.requiredTileList.size());
 
-		return new GeneticSolution<T>(chromosome, fitness, coveredTileList);
+		return new GeneticSolution(chromosome, fitness, coveredTileList);
 	}
 
 	private <T extends Chromosome> boolean isHit(final Tile tile, final T chromosome,

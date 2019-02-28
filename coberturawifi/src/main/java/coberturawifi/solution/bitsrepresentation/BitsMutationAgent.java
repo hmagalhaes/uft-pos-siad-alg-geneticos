@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import coberturawifi.Configs;
-import coberturawifi.model.BitsChromosome;
 import coberturawifi.model.Blueprint;
 import coberturawifi.model.Chromosome;
 import coberturawifi.solution.MutationAgent;
@@ -44,12 +43,11 @@ public class BitsMutationAgent extends MutationAgent {
 		return mutantPopulationSize;
 	}
 
-	public List<? extends Chromosome> mutatePopulation(final List<? extends Chromosome> population,
-			final Blueprint blueprin) {
+	public List<Chromosome> mutatePopulation(final List<Chromosome> population, final Blueprint blueprin) {
 
 		final short mutationBits = calcMutationBits(population);
 
-		final List<BitsChromosome> mutatedPop = new ArrayList<>(mutantPopulationSize);
+		final List<Chromosome> mutatedPop = new ArrayList<>(mutantPopulationSize);
 		for (int i = 0; i < mutantPopulationSize; i++) {
 			final int mutantIndex = randomizer.nextInt(populationSize);
 			final BitsChromosome healty = (BitsChromosome) population.get(mutantIndex);

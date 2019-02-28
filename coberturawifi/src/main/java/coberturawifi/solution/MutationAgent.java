@@ -32,8 +32,7 @@ public abstract class MutationAgent {
 		}
 	}
 
-	public abstract List<? extends Chromosome> mutatePopulation(final List<? extends Chromosome> population,
-			final Blueprint blueprint);
+	public abstract List<Chromosome> mutatePopulation(final List<Chromosome> population, final Blueprint blueprint);
 
 	public abstract short getMutantPopulationSize();
 }
