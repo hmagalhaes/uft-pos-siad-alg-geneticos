@@ -60,9 +60,9 @@ public class BitList implements Cloneable {
 		return this;
 	}
 
-	public void set(final BitList sourceBitList, final int fromIndex) {
+	public void set(final int index, final BitList sourceBitList) {
 		int sourceIndex = 0;
-		int targetIndex = fromIndex;
+		int targetIndex = index;
 
 		while (sourceIndex < sourceBitList.size()) {
 			final boolean sourceBit = sourceBitList.get(sourceIndex);
@@ -72,7 +72,7 @@ public class BitList implements Cloneable {
 			targetIndex++;
 		}
 
-		final int requiredSize = fromIndex + sourceBitList.size;
+		final int requiredSize = index + sourceBitList.size;
 		this.size = Math.max(this.size, requiredSize);
 	}
 

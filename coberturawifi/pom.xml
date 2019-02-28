@@ -54,7 +54,7 @@
 						<argument>3</argument>
 
 						<!-- Raio de cobertura do ponto de acesso -->
-						<argument>5</argument>
+						<argument>7</argument>
 					</arguments>
 				</configuration>
 			</plugin>

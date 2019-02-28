@@ -1,23 +1,23 @@
-package coberturawifi.solution;
+package coberturawifi.solution.bitsrepresentation;
 
-import coberturawifi.model.Chromosome;
+import coberturawifi.model.BitsChromosome;
 import coberturawifi.util.BitList;
 
-public class CrossingHalfByHalfStrategy implements CrossingStrategy {
+class BitsCrossingHalfByHalfStrategy implements BitsCrossingStrategy {
 
 	public static final String STRATEGY_NAME = "half/half";
 
-	private static CrossingHalfByHalfStrategy instance;
+	private static BitsCrossingHalfByHalfStrategy instance;
 
-	public static CrossingHalfByHalfStrategy getInstance() {
+	public static BitsCrossingHalfByHalfStrategy getInstance() {
 		if (instance == null) {
-			instance = new CrossingHalfByHalfStrategy();
+			instance = new BitsCrossingHalfByHalfStrategy();
 		}
 		return instance;
 	}
 
 	@Override
-	public Chromosome cross(final Chromosome father, final Chromosome mother) {
+	public BitsChromosome cross(final BitsChromosome father, final BitsChromosome mother) {
 		final BitList fatherBits = father.getBits();
 		final BitList motherBits = mother.getBits();
 
@@ -30,8 +30,8 @@ public class CrossingHalfByHalfStrategy implements CrossingStrategy {
 		final BitList motherHalf = motherBits.getBitsInterval(motherHalfIndex, chromosomeSize);
 
 		final BitList childBits = BitList.allocate(chromosomeSize);
-		childBits.set(fatherHalf, 0);
-		childBits.set(motherHalf, motherHalfIndex);
+		childBits.set(0, fatherHalf);
+		childBits.set(motherHalfIndex, motherHalf);
 
 		return mother.withBits(childBits);
 	}

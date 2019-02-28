@@ -5,12 +5,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import coberturawifi.Configs;
+import coberturawifi.model.BitsChromosome;
 import coberturawifi.model.Blueprint;
 import coberturawifi.model.Chromosome;
 import coberturawifi.model.GeneticSolution;
 import coberturawifi.model.Layout;
+import coberturawifi.solution.bitsrepresentation.BitsCrossingAgent;
+import coberturawifi.solution.bitsrepresentation.BitsInitialPopGenerator;
+import coberturawifi.solution.bitsrepresentation.BitsMutationAgent;
+import coberturawifi.solution.realrepresentation.IntsCrossingAgent;
+import coberturawifi.solution.realrepresentation.IntsInitialPopGenerator;
 
 public class SolutionFinder {
+
+	private static final String BITS_TYPE = "bits";
+	private static final String INTS_REPRESENTATION = "ints";
 
 	private static SolutionFinder instance;
 
@@ -19,11 +28,11 @@ public class SolutionFinder {
 	private final short resultSolutionCount;
 
 	private final Configs configs = Configs.getInstance();
-	private final MutationAgent mutationAgent = MutationAgent.getInstance();
+	private final MutationAgent mutationAgent;
 	private final EliteAgent eliteAgent = EliteAgent.getInstance();
-	private final CrossingAgent crossingAgent = CrossingAgent.getInstance();
-	private final InitialPopGenerator initialPopGenerator = InitialPopGenerator.getInstance();
-	private final SelectionAgent selectionAgent = SelectionAgent.getInstance();
+	private final CrossingAgent crossingAgent;
+	private final InitialPopulationGenerator initialPopGenerator;
+	private final SelectionAgent selectionAgent= SelectionAgent.getInstance();
 	private final FitnessAgent fitnessAgent = FitnessAgent.getInstance();
 
 	private SolutionFinder() {
@@ -31,7 +40,19 @@ public class SolutionFinder {
 		this.resultSolutionCount = configs.getShort(Configs.RESULT_SOLUTION_COUNT);
 		this.populationSize = configs.getShort(Configs.POPULATION_SIZE);
 
-		System.out.println("Solution Finder started => generationCount: " + generationCount + ", populationSize: "
+		final String representation = Configs.getInstance().getString(Configs.REPRESENTATION_TYPE);
+		if (BITS_TYPE.equals(representation)) {
+			this.initialPopGenerator = BitsInitialPopGenerator.getInstance();
+			this.crossingAgent = BitsCrossingAgent.getInstance();
+			this.mutationAgent = BitsMutationAgent.getInstance();
+		} else if (INTS_REPRESENTATION.equals(representation)) {
+			this.initialPopGenerator = IntsInitialPopGenerator.getInstance();
+			this.crossingAgent = IntsCrossingAgent.getInstance();
+		} else {
+			throw new IllegalArgumentException("Bad representation => " + representation);
+		}
+
+		System.out.println("BitsSolutionFinder started => generationCount: " + generationCount + ", populationSize: "
 				+ populationSize + ", resultSolutionCount: " + resultSolutionCount);
 	}
 
@@ -47,11 +68,11 @@ public class SolutionFinder {
 
 		final BestSolutionsHolder bestSolutionsHolder = new BestSolutionsHolder(resultSolutionCount);
 
-		List<Chromosome> population = initialPopGenerator.generatePopulation(blueprint, accessPointCount);
+		List<? extends Chromosome> population = initialPopGenerator.generatePopulation(blueprint, accessPointCount);
 		int generation = 0;
 		while (true) {
-			final List<GeneticSolution> solutionList = fitnessAgent.calculateFitness(blueprint, population,
-					accessPointRadiusInPixels);
+			final List<GeneticSolution<? extends Chromosome>> solutionList = fitnessAgent.calculateFitness(blueprint,
+					population, accessPointRadiusInPixels);
 			System.out.printf("Buscando => geração: %d / %d, melhorLocal: %f, mediaLocal: %f, melhorGlobal: %f\n",
 					generation + 1, this.generationCount, getBestFitness(solutionList), getAverageFitness(solutionList),
 					bestSolutionsHolder.currentBestFitness());
@@ -71,13 +92,14 @@ public class SolutionFinder {
 		}
 
 		System.out.println("Global best:");
-		final List<GeneticSolution> globalBestSolutionList = bestSolutionsHolder.getBestSolutions();
+		final List<GeneticSolution<? extends Chromosome>> globalBestSolutionList = bestSolutionsHolder
+				.getBestSolutions();
 		final int totalRequiredTiles = blueprint.requiredTileList.size();
 
 		final List<Layout> layoutList = new ArrayList<>(globalBestSolutionList.size());
-		for (GeneticSolution solution : globalBestSolutionList) {
-			System.out.println(
-					"--- coverability: " + solution.coverability(totalRequiredTiles) + ", solution: " + solution);
+		for (GeneticSolution<? extends Chromosome> solution : globalBestSolutionList) {
+			System.out.println("--- coverability: " + solution.coverability(totalRequiredTiles) + ", requiredTiles: "
+					+ totalRequiredTiles + ", solution: " + solution);
 
 			final Layout layout = Layout.of(solution, accessPointRadiusInPixels);
 			layoutList.add(layout);
@@ -85,28 +107,28 @@ public class SolutionFinder {
 		return layoutList;
 	}
 
-	private float getBestFitness(List<GeneticSolution> solutionList) {
+	private float getBestFitness(List<GeneticSolution<? extends Chromosome>> solutionList) {
 		return solutionList.stream().map(solution -> solution.fitness)
 				.collect(Collectors.maxBy((fitness1, fitness2) -> Double.compare(fitness1, fitness2))).get()
 				.floatValue();
 	}
 
-	private float getAverageFitness(List<GeneticSolution> solutionList) {
+	private float getAverageFitness(List<GeneticSolution<? extends Chromosome>> solutionList) {
 		return solutionList.stream().collect(Collectors.averagingDouble(solution -> solution.fitness)).floatValue();
 	}
 
-	private List<Chromosome> createNewGeneration(final List<Chromosome> population,
-			final List<GeneticSolution> solutionList) {
+	private List<BitsChromosome> createNewGeneration(final List<BitsChromosome> population,
+			final List<GeneticSolution<? extends Chromosome>> solutionList) {
 
-		final List<Chromosome> eliteList = eliteAgent.findPopulationElite(solutionList);
-		final List<Chromosome> crossedList = crossingAgent.crossPopulation(population);
-		final List<Chromosome> mutantList = mutationAgent.mutatePopulation(population);
-		final List<Chromosome> selectedList = selectionAgent.select(solutionList);
+		final List<BitsChromosome> eliteList = eliteAgent.findPopulationElite(solutionList);
+		final List<BitsChromosome> crossedList = crossingAgent.crossPopulation(population);
+		final List<BitsChromosome> mutantList = mutationAgent.mutatePopulation(population);
+		final List<BitsChromosome> selectedList = selectionAgent.select(solutionList);
 
 //		System.out.println("elites: " + eliteList.size() + ", crossed: " + crossedList.size() + ", mutant: "
 //				+ mutantList.size() + ", selected: " + selectedList.size());
 
-		final List<Chromosome> newPopulation = new ArrayList<>(populationSize);
+		final List<BitsChromosome> newPopulation = new ArrayList<>(populationSize);
 		newPopulation.addAll(eliteList);
 		newPopulation.addAll(crossedList);
 		newPopulation.addAll(mutantList);

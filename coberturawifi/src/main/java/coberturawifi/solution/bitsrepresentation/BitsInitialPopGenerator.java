@@ -1,44 +1,45 @@
-package coberturawifi.solution;
+package coberturawifi.solution.bitsrepresentation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import coberturawifi.Configs;
+import coberturawifi.model.BitsChromosome;
 import coberturawifi.model.Blueprint;
-import coberturawifi.model.Chromosome;
 import coberturawifi.model.Coordinates;
+import coberturawifi.solution.InitialPopulationGenerator;
 import coberturawifi.util.Randomizer;
 
-class InitialPopGenerator {
+public class BitsInitialPopGenerator implements InitialPopulationGenerator {
 
-	private static InitialPopGenerator instance;
+	private static BitsInitialPopGenerator instance;
 
 	private final Randomizer randomizer = Randomizer.getInstance();
 	private final short populationSize;
 
-	private InitialPopGenerator() {
+	private BitsInitialPopGenerator() {
 		this.populationSize = Configs.getInstance().getShort(Configs.POPULATION_SIZE);
 	}
 
-	public static InitialPopGenerator getInstance() {
+	public static BitsInitialPopGenerator getInstance() {
 		if (instance == null) {
-			instance = new InitialPopGenerator();
+			instance = new BitsInitialPopGenerator();
 		}
 		return instance;
 	}
 
-	public List<Chromosome> generatePopulation(final Blueprint plant, final short accessPointCount) {
+	public List<BitsChromosome> generatePopulation(final Blueprint plant, final short accessPointCount) {
 
-		final List<Chromosome> population = new ArrayList<>(populationSize);
+		final List<BitsChromosome> population = new ArrayList<>(populationSize);
 		for (short i = 0; i < populationSize; i++) {
-			final Chromosome chromosome = generateChromosome(plant, accessPointCount);
+			final BitsChromosome chromosome = generateChromosome(plant, accessPointCount);
 			population.add(chromosome);
 		}
 		return population;
 	}
 
-	private Chromosome generateChromosome(final Blueprint plant, final short accessPointCount) {
-		final Chromosome chromosome = new Chromosome(accessPointCount);
+	private BitsChromosome generateChromosome(final Blueprint plant, final short accessPointCount) {
+		final BitsChromosome chromosome = new BitsChromosome(accessPointCount);
 		for (short apIndex = 0; apIndex < accessPointCount; apIndex++) {
 			final int x = randomizer.nextInt(plant.widthInPixels);
 			final int y = randomizer.nextInt(plant.heightInPixels);

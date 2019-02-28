@@ -8,13 +8,13 @@ import coberturawifi.Configs;
 import coberturawifi.model.Chromosome;
 import coberturawifi.model.GeneticSolution;
 
-class EliteAgent {
+public class EliteAgent {
 
 	private static EliteAgent instance;
 
 	private final Configs configs = Configs.getInstance();
 
-	final short elitePopulationSize;
+	public final short elitePopulationSize;
 
 	private EliteAgent() {
 		final short populationSize = configs.getShort(Configs.POPULATION_SIZE);
@@ -33,15 +33,16 @@ class EliteAgent {
 		return instance;
 	}
 
-	public List<Chromosome> findPopulationElite(final List<GeneticSolution> solutionList) {
-		final List<GeneticSolution> sortedSolutions = solutionList.stream()
+	public <T extends Chromosome> List<T> findPopulationElite(final List<GeneticSolution<T>> solutionList) {
+
+		final List<GeneticSolution<T>> sortedSolutions = solutionList.stream()
 				.sorted(GeneticSolution.getBestFitnessComparator()).collect(Collectors.toList());
 
 //		System.out.println("Generation elite:");
-		final List<Chromosome> eliteList = new ArrayList<>(elitePopulationSize);
+		final List<T> eliteList = new ArrayList<>(elitePopulationSize);
 		for (int i = 0; i < elitePopulationSize; i++) {
-			GeneticSolution solution = sortedSolutions.get(i);
-			Chromosome elite = solution.chromosome;
+			final GeneticSolution<T> solution = sortedSolutions.get(i);
+			final T elite = solution.chromosome;
 
 			eliteList.add(elite);
 //			System.out.println("--- " + solution);

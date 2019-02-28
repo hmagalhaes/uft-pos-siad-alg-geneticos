@@ -15,6 +15,7 @@ public class Blueprint {
 
 	public Blueprint(int widthInPixels, int heightInPixels, int widthInMeters, int heightInMeters,
 			List<Tile> requiredTileList, List<Tile> allTileList, int pixelsForMeter) {
+
 		this.widthInPixels = widthInPixels;
 		this.heightInPixels = heightInPixels;
 		this.widthInMeters = widthInMeters;
@@ -25,6 +26,7 @@ public class Blueprint {
 	}
 
 	public static class BlueprintBuilder {
+
 		private int widthInPixels;
 		private int heightInPixels;
 		private int widthInMeters;

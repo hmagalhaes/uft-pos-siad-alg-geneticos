@@ -10,10 +10,10 @@ public class Layout {
 
 	public Layout(List<AccessPoint> accessPointList, List<Tile> coveredTileList) {
 		this.accessPointList = accessPointList;
-		this.coveredTileList=coveredTileList;
+		this.coveredTileList = coveredTileList;
 	}
 
-	public static Layout of(final GeneticSolution geneticSolution, final int rangeRadiusInPixels) {
+	public static Layout of(final GeneticSolution<? extends Chromosome> geneticSolution, final int rangeRadiusInPixels) {
 		final List<Coordinates> coordsList = geneticSolution.chromosome.getCoordinateList();
 
 		final List<AccessPoint> apList = new ArrayList<>(coordsList.size());
@@ -25,7 +25,7 @@ public class Layout {
 		// TODO remover lista de tiles criada para debug
 		return new Layout(apList, geneticSolution.coveredTileList);
 	}
-	
+
 	@Override
 	public String toString() {
 		return accessPointList.toString();

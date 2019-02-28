@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import coberturawifi.model.Chromosome;
+import coberturawifi.model.BitsChromosome;
 import coberturawifi.model.Coordinates;
 
 public class ChromosomeTest {
@@ -22,7 +22,7 @@ public class ChromosomeTest {
 	public void singleAccessPointDataRepresentationTest() {
 		final Coordinates coordinates = new Coordinates(543, 30000);
 
-		final Chromosome chromosome = new Chromosome(ONE_ACCESS_POINT);
+		final BitsChromosome chromosome = new BitsChromosome(ONE_ACCESS_POINT);
 		chromosome.setCoordinatesFor(coordinates, FIRST_ACCESS_POINT);
 
 		assertEquals(coordinates, chromosome.getCoordinatesFor(FIRST_ACCESS_POINT));
@@ -38,7 +38,7 @@ public class ChromosomeTest {
 		final Coordinates secondCoordinates = new Coordinates(0, 8547);
 		final Coordinates thirdCoordinates = new Coordinates(25478, 1110);
 
-		final Chromosome chromosome = new Chromosome(THREE_ACCESS_POINTS);
+		final BitsChromosome chromosome = new BitsChromosome(THREE_ACCESS_POINTS);
 		chromosome.setCoordinatesFor(firstCoordinates, FIRST_ACCESS_POINT);
 		chromosome.setCoordinatesFor(secondCoordinates, SECOND_ACCESS_POINT);
 		chromosome.setCoordinatesFor(thirdCoordinates, THIRD_ACCESS_POINT);
@@ -52,23 +52,27 @@ public class ChromosomeTest {
 		assertEquals(firstCoordinates, coordinatesList.get(0));
 		assertEquals(secondCoordinates, coordinatesList.get(1));
 		assertEquals(thirdCoordinates, coordinatesList.get(2));
+
+		final int actualBits = chromosome.getBits().size();
+		final int expectedBits = chromosome.getMaxBitsCount();
+		assertEquals(expectedBits, actualBits);
 	}
 
 	@Test
-	public void getBitsCountTest() {
+	public void getMaxBitsCountTest() {
 		{
-			final Chromosome chromosome = new Chromosome(ONE_ACCESS_POINT);
-			final short bitsCount = Chromosome.CHROMOSOME_ATTRIBUTE_COUNT * Chromosome.CHROMOSOME_ATTRIBUTE_LENGTH
+			final BitsChromosome chromosome = new BitsChromosome(ONE_ACCESS_POINT);
+			final short bitsCount = BitsChromosome.CHROMOSOME_ATTRIBUTE_COUNT * BitsChromosome.CHROMOSOME_ATTRIBUTE_LENGTH
 					* ONE_ACCESS_POINT;
-			assertEquals(bitsCount, chromosome.getBitsCount());
-			assertEquals(bitsCount, Chromosome.getBitsCount(ONE_ACCESS_POINT));
+			assertEquals(bitsCount, chromosome.getMaxBitsCount());
+			assertEquals(bitsCount, BitsChromosome.getMaxBitsCount(ONE_ACCESS_POINT));
 		}
 		{
-			final Chromosome chromosome = new Chromosome(THREE_ACCESS_POINTS);
-			final short bitsCount = Chromosome.CHROMOSOME_ATTRIBUTE_COUNT * Chromosome.CHROMOSOME_ATTRIBUTE_LENGTH
+			final BitsChromosome chromosome = new BitsChromosome(THREE_ACCESS_POINTS);
+			final short bitsCount = BitsChromosome.CHROMOSOME_ATTRIBUTE_COUNT * BitsChromosome.CHROMOSOME_ATTRIBUTE_LENGTH
 					* THREE_ACCESS_POINTS;
-			assertEquals(bitsCount, chromosome.getBitsCount());
-			assertEquals(bitsCount, Chromosome.getBitsCount(THREE_ACCESS_POINTS));
+			assertEquals(bitsCount, chromosome.getMaxBitsCount());
+			assertEquals(bitsCount, BitsChromosome.getMaxBitsCount(THREE_ACCESS_POINTS));
 		}
 	}
 

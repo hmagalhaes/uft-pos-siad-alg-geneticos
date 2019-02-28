@@ -33,7 +33,8 @@ class SelectionAgent {
 		return instance;
 	}
 
-	public List<Chromosome> select(final List<GeneticSolution> solutionList) {
+	public List<? extends Chromosome> select(final List<GeneticSolution<? extends Chromosome>> solutionList) {
+
 		final List<Chromosome> selectedPopulation = new ArrayList<>(selectedPopulationSize);
 		for (short i = 0; i < selectedPopulationSize; i++) {
 			final Chromosome chromosome = rollTheRoulette(solutionList);
@@ -42,13 +43,13 @@ class SelectionAgent {
 		return selectedPopulation;
 	}
 
-	private Chromosome rollTheRoulette(final List<GeneticSolution> solutionList) {
+	private Chromosome rollTheRoulette(final List<GeneticSolution<? extends Chromosome>> solutionList) {
 		final double totalFitness = solutionList.stream()
 				.collect(Collectors.summingDouble(solution -> solution.fitness));
 		final double rolled = randomizer.nextDouble(totalFitness);
 
 		double accumulated = 0;
-		for (GeneticSolution solution : solutionList) {
+		for (GeneticSolution<? extends Chromosome> solution : solutionList) {
 			accumulated += solution.fitness;
 			if (accumulated >= rolled) {
 				return solution.chromosome;

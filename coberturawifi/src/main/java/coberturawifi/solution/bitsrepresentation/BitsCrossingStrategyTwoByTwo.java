@@ -1,25 +1,25 @@
-package coberturawifi.solution;
+package coberturawifi.solution.bitsrepresentation;
 
-import coberturawifi.model.Chromosome;
+import coberturawifi.model.BitsChromosome;
 import coberturawifi.util.BitList;
 
-class CrossingStrategyTwoByTwo implements CrossingStrategy {
+class BitsCrossingStrategyTwoByTwo implements BitsCrossingStrategy {
 
 	public static final String STRATEGY_NAME = "2/2";
 
 	private static final byte CROSSED_BIT_CHUNK_SIZE = 2;
 
-	private static CrossingStrategyTwoByTwo instance;
+	private static BitsCrossingStrategyTwoByTwo instance;
 
-	public static CrossingStrategyTwoByTwo getInstance() {
+	public static BitsCrossingStrategyTwoByTwo getInstance() {
 		if (instance == null) {
-			instance = new CrossingStrategyTwoByTwo();
+			instance = new BitsCrossingStrategyTwoByTwo();
 		}
 		return instance;
 	}
-	
+
 	@Override
-	public Chromosome cross(final Chromosome father, final Chromosome mother) {
+	public BitsChromosome cross(final BitsChromosome father, final BitsChromosome mother) {
 		final BitList fatherBits = father.getBits();
 		final BitList motherBits = mother.getBits();
 		final short chromosomeSize = (short) fatherBits.size();
@@ -36,7 +36,7 @@ class CrossingStrategyTwoByTwo implements CrossingStrategy {
 				}
 
 				final BitList chunk = fatherBits.getBitsInterval(chunkStart, chunkEnd);
-				childBits.set(chunk, chunkStart);
+				childBits.set(chunkStart, chunk);
 
 				chunkStart = chunkEnd;
 			}
@@ -49,7 +49,7 @@ class CrossingStrategyTwoByTwo implements CrossingStrategy {
 				}
 
 				final BitList chunk = motherBits.getBitsInterval(chunkStart, chunkEnd);
-				childBits.set(chunk, chunkStart);
+				childBits.set(chunkStart, chunk);
 
 				chunkStart = chunkEnd;
 			}

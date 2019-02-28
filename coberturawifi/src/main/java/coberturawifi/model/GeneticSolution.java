@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class GeneticSolution implements Comparable<GeneticSolution> {
+public class GeneticSolution<T extends Chromosome> implements Comparable<GeneticSolution<T>> {
 
-	public final Chromosome chromosome;
+	public final T chromosome;
 	public final double fitness;
 	public final List<Tile> coveredTileList;
 
-	public GeneticSolution(Chromosome chromosome, double fitness, List<Tile> coveredTileList) {
+	public GeneticSolution(T chromosome, double fitness, List<Tile> coveredTileList) {
 		this.chromosome = chromosome;
 		this.fitness = fitness;
 		this.coveredTileList = coveredTileList == null ? Collections.emptyList()
@@ -18,12 +18,12 @@ public class GeneticSolution implements Comparable<GeneticSolution> {
 	}
 
 	@Override
-	public int compareTo(GeneticSolution other) {
+	public int compareTo(GeneticSolution<T> other) {
 		return Double.compare(fitness, other.fitness);
 	}
 
-	public GeneticSolution withChromosome(Chromosome newChromosome) {
-		return new GeneticSolution(newChromosome, this.fitness, this.coveredTileList);
+	public GeneticSolution<T> withChromosome(T newChromosome) {
+		return new GeneticSolution<T>(newChromosome, this.fitness, this.coveredTileList);
 	}
 
 	public float coverability(final int totalTilesCount) {
@@ -55,7 +55,7 @@ public class GeneticSolution implements Comparable<GeneticSolution> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GeneticSolution other = (GeneticSolution) obj;
+		GeneticSolution<?> other = (GeneticSolution<?>) obj;
 		if (Double.doubleToLongBits(fitness) != Double.doubleToLongBits(other.fitness))
 			return false;
 		if (chromosome == null) {
@@ -66,7 +66,7 @@ public class GeneticSolution implements Comparable<GeneticSolution> {
 		return true;
 	}
 
-	public static Comparator<GeneticSolution> getBestFitnessComparator() {
+	public static Comparator<GeneticSolution<?>> getBestFitnessComparator() {
 		return (solution1, solution2) -> Double.compare(solution2.fitness, solution1.fitness);
 	}
 

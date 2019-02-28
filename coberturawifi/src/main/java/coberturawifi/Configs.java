@@ -9,6 +9,8 @@ public class Configs {
 	public static final String TILE_SIZE_IN_METERS = "blueprint.tile.size.in.meters";
 	public static final String BLUEPRINT_REQUIRED_AREA_COLOR = "blueprint.required.area.color";
 	public static final String GENERATION_COUNT = "generation.count";
+	public static final String REPRESENTATION_TYPE = "representation.type";
+
 	public static final String RESULT_SOLUTION_COUNT = "result.solution.count";
 	public static final String RESULT_SOLUTION_FILE_PATTERN = "result.solution.file.pattern";
 	public static final String RESULT_SOLUTION_COVERED_TILES_FILE_PATTERN = "result.solution.tiles.file.pattern";
