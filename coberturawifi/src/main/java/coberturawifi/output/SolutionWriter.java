@@ -7,10 +7,10 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 import coberturawifi.Configs;
-import coberturawifi.model.AccessPoint;
 import coberturawifi.model.Blueprint;
-import coberturawifi.model.Layout;
+import coberturawifi.model.Coordinates;
 import coberturawifi.model.Rect;
+import coberturawifi.model.Solution;
 import coberturawifi.util.ImageHelper;
 
 public class SolutionWriter {
@@ -78,19 +78,21 @@ public class SolutionWriter {
 		ImageHelper.saveImage(image, outputFile, fileFormat);
 	}
 
-	public void printSolutions(final Blueprint blueprint, final List<Layout> layoutList) {
+	public void printSolutions(final Blueprint blueprint, final List<Solution> solutionList) {
 
 		final String outputPattern = Configs.getInstance().getString(Configs.RESULT_SOLUTION_FILE_PATTERN);
 		final String coveredTilesFileName = Configs.getInstance()
 				.getString(Configs.RESULT_SOLUTION_COVERED_TILES_FILE_PATTERN);
 		final boolean printGrids = Configs.getInstance().getBoolean(Configs.RESULT_PRINT_GRID);
+		final short accessPointRadiusInMeters = Configs.getInstance().getShort(Configs.ACCESS_POINT_RADIUS_IN_METERS);
+		final int accessPointRadiusInPixels = accessPointRadiusInMeters * blueprint.pixelsForMeter;
 
-		for (int layoutIndex = 0; layoutIndex < layoutList.size(); layoutIndex++) {
-			final Layout layout = layoutList.get(layoutIndex);
+		for (int layoutIndex = 0; layoutIndex < solutionList.size(); layoutIndex++) {
+			final Solution solution = solutionList.get(layoutIndex);
 
 			final BufferedImage image = ImageHelper.readImage(blueprintFile);
-			final List<AccessPoint> accessPointList = layout.accessPointList;
-			printSolutions(image, accessPointList);
+			final List<Coordinates> accessPointList = solution.chromosome.getCoordinateList();
+			printSolutions(image, accessPointList, accessPointRadiusInPixels);
 
 			final String outputFile = outputPattern.replace(FILE_PATTERN_FOLDER_TOKEN, outputFolder)
 					.replace(FILE_PATTERN_INDEX_TOKEN, Integer.toString(layoutIndex))
@@ -102,7 +104,7 @@ public class SolutionWriter {
 				final String coveredTilesFile = coveredTilesFileName.replace(FILE_PATTERN_FOLDER_TOKEN, outputFolder)
 						.replace(FILE_PATTERN_INDEX_TOKEN, Integer.toString(layoutIndex))
 						.replace(FILE_PATTERN_EXTENSION_TOKEN, fileFormat);
-				printGrid(coveredTilesFile, layout.coveredTileList);
+				printGrid(coveredTilesFile, solution.coveredTileList);
 			}
 		}
 
@@ -112,17 +114,18 @@ public class SolutionWriter {
 		}
 	}
 
-	private void printSolutions(final BufferedImage image, final List<AccessPoint> accessPointList) {
+	private void printSolutions(final BufferedImage image, final List<Coordinates> coordinatesList,
+			final int accessPointRadiusInPixels) {
 
 		final Font font = new Font("serif", Font.BOLD, 12);
 
 		final Graphics2D graphics = image.createGraphics();
 		graphics.setFont(font);
 
-		for (int i = 0; i < accessPointList.size(); i++) {
-			final AccessPoint ap = accessPointList.get(i);
-			drawRadius(ap, graphics);
-			drawCross(ap, graphics);
+		for (int i = 0; i < coordinatesList.size(); i++) {
+			final Coordinates coords = coordinatesList.get(i);
+			drawRadius(coords, graphics, accessPointRadiusInPixels);
+			drawCross(coords, graphics, accessPointRadiusInPixels);
 //			drawNumber(ap, graphics, i);
 		}
 	}
@@ -132,13 +135,13 @@ public class SolutionWriter {
 //		graphics.drawString(Integer.toString(number), ap.x - 3, ap.y - 3);
 //	}
 
-	private void drawCross(final AccessPoint ap, final Graphics2D graphics) {
+	private void drawCross(final Coordinates coords, final Graphics2D graphics, final int accessPointRadiusInPixels) {
 		graphics.setColor(crossColor);
 
-		final int x1 = ap.x - (CROSS_LENGTH_IN_PIXELS / 2);
-		final int x2 = ap.x + (CROSS_LENGTH_IN_PIXELS / 2);
-		final int y1 = ap.y - (CROSS_LENGTH_IN_PIXELS / 2);
-		final int y2 = ap.y + (CROSS_LENGTH_IN_PIXELS / 2);
+		final int x1 = coords.x - (CROSS_LENGTH_IN_PIXELS / 2);
+		final int x2 = coords.x + (CROSS_LENGTH_IN_PIXELS / 2);
+		final int y1 = coords.y - (CROSS_LENGTH_IN_PIXELS / 2);
+		final int y2 = coords.y + (CROSS_LENGTH_IN_PIXELS / 2);
 
 		graphics.drawLine(x1, y1, x2, y2);
 		graphics.drawLine(x1, y1 + 1, x2, y2 + 1);
@@ -149,11 +152,12 @@ public class SolutionWriter {
 		graphics.drawLine(x1, y2 - 1, x2, y1 - 1);
 	}
 
-	private void drawRadius(final AccessPoint ap, final Graphics2D graphics) {
-		final int doubleRadius = ap.rangeRadius * 2;
+	private void drawRadius(final Coordinates coords, final Graphics2D graphics, final int accessPointRadiusInPixels) {
 
-		final int x = ap.x - ap.rangeRadius;
-		final int y = ap.y - ap.rangeRadius;
+		final int doubleRadius = accessPointRadiusInPixels * 2;
+
+		final int x = coords.x - accessPointRadiusInPixels;
+		final int y = coords.y - accessPointRadiusInPixels;
 
 		graphics.setColor(radiusColor);
 		graphics.fillOval(x, y, doubleRadius, doubleRadius);

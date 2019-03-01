@@ -1,19 +1,19 @@
 Global best:
 
 1)
-- percentual cobertura: 0.86475945
+- percentual cobertura: 0.8387516
 - requiredTiles: 769
-- solution: GeneticSolution [chromosome=Chromosome [ [Coordinates [x=151, y=1627], Coordinates [x=524, y=1710], Coordinates [x=176, y=890], Coordinates [x=167, y=189], Coordinates [x=490, y=464]] ], fitness=0.8647594278283485, coveredTiles=665]
+- solution: GeneticSolution [chromosome=Chromosome [ [Coordinates [x=522, y=559], Coordinates [x=155, y=832], Coordinates [x=455, y=1713], Coordinates [x=147, y=183], Coordinates [x=162, y=1605]] ], fitness=0.8387516254876463, coveredTiles=645]
 
 2)
-- percentual cobertura: 0.86345905
+- percentual cobertura: 0.8374512
 - requiredTiles: 769
-- solution: GeneticSolution [chromosome=Chromosome [ [Coordinates [x=178, y=1627], Coordinates [x=524, y=1710], Coordinates [x=176, y=890], Coordinates [x=167, y=189], Coordinates [x=490, y=464]] ], fitness=0.8634590377113134, coveredTiles=664]
+- solution: GeneticSolution [chromosome=Chromosome [ [Coordinates [x=485, y=559], Coordinates [x=155, y=832], Coordinates [x=455, y=1713], Coordinates [x=147, y=183], Coordinates [x=162, y=1605]] ], fitness=0.8374512353706112, coveredTiles=644]
 
 3)
-- percentual cobertura: 0.86085826
+- percentual cobertura: 0.8374512
 - requiredTiles: 769
-- solution: GeneticSolution [chromosome=Chromosome [ [Coordinates [x=178, y=1627], Coordinates [x=524, y=1717], Coordinates [x=176, y=890], Coordinates [x=167, y=189], Coordinates [x=490, y=464]] ], fitness=0.8608582574772432, coveredTiles=662]
+- solution: GeneticSolution [chromosome=Chromosome [ [Coordinates [x=501, y=559], Coordinates [x=155, y=832], Coordinates [x=455, y=1713], Coordinates [x=147, y=183], Coordinates [x=162, y=1605]] ], fitness=0.8374512353706112, coveredTiles=644]
 
 
-Soluções encontradas em 8330ms
+Soluções encontradas em 8496ms

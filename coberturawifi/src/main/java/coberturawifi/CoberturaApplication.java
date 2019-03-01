@@ -5,7 +5,7 @@ import java.util.List;
 
 import coberturawifi.input.BlueprintReader;
 import coberturawifi.model.Blueprint;
-import coberturawifi.model.Layout;
+import coberturawifi.model.Solution;
 import coberturawifi.output.SolutionWriter;
 import coberturawifi.solution.SolutionFinder;
 
@@ -25,10 +25,10 @@ public class CoberturaApplication {
 		System.out.printf("Planta lida em %dms\n", System.currentTimeMillis() - blueprintStart);
 
 		final long searchStart = System.currentTimeMillis();
-		final List<Layout> layoutList = SolutionFinder.getInstance().findBestMatch(blueprint);
+		final List<Solution> solutionList = SolutionFinder.getInstance().findBestMatch(blueprint);
 		System.out.printf("Soluções encontradas em %dms\n", System.currentTimeMillis() - searchStart);
 
-		SolutionWriter.getInstance().printSolutions(blueprint, layoutList);
+		SolutionWriter.getInstance().printSolutions(blueprint, solutionList);
 	}
 
 }

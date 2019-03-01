@@ -6,7 +6,7 @@ import java.util.List;
 import coberturawifi.model.Blueprint;
 import coberturawifi.model.Chromosome;
 import coberturawifi.model.Coordinates;
-import coberturawifi.model.GeneticSolution;
+import coberturawifi.model.Solution;
 import coberturawifi.model.Rect;
 
 public class FitnessAgent {
@@ -24,18 +24,18 @@ public class FitnessAgent {
 		return instance;
 	}
 
-	public List<GeneticSolution> calculateFitness(final Blueprint blueprint,
+	public List<Solution> calculateFitness(final Blueprint blueprint,
 			final List<? extends Chromosome> population, final int accessPointRadiusInPixels) {
 
-		final List<GeneticSolution> solutionList = new ArrayList<>(population.size());
+		final List<Solution> solutionList = new ArrayList<>(population.size());
 		for (Chromosome chromosome : population) {
-			final GeneticSolution solution = calculateFitness(blueprint, chromosome, accessPointRadiusInPixels);
+			final Solution solution = calculateFitness(blueprint, chromosome, accessPointRadiusInPixels);
 			solutionList.add(solution);
 		}
 		return solutionList;
 	}
 
-	private GeneticSolution calculateFitness(final Blueprint blueprint, final Chromosome chromosome,
+	private Solution calculateFitness(final Blueprint blueprint, final Chromosome chromosome,
 			final int accessPointRadiusInPixels) {
 
 		final List<Rect> coveredTileList = new ArrayList<>();
@@ -50,7 +50,7 @@ public class FitnessAgent {
 //		System.out.println("fitness: " + fitness + ", tileshit: " + tilesHit + ", requiredTiles: "
 //				+ blueprint.requiredTileList.size());
 
-		return new GeneticSolution(chromosome, fitness, coveredTileList);
+		return new Solution(chromosome, fitness, coveredTileList);
 	}
 
 	private <T extends Chromosome> boolean isHit(final Rect rect, final T chromosome,

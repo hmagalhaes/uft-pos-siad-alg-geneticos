@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class GeneticSolution implements Comparable<GeneticSolution> {
+public class Solution implements Comparable<Solution> {
 
 	public final Chromosome chromosome;
 	public final double fitness;
 	public final List<Rect> coveredTileList;
 
-	public GeneticSolution(Chromosome chromosome, double fitness, List<Rect> coveredTileList) {
+	public Solution(Chromosome chromosome, double fitness, List<Rect> coveredTileList) {
 		this.chromosome = chromosome;
 		this.fitness = fitness;
 		this.coveredTileList = coveredTileList == null ? Collections.emptyList()
@@ -18,12 +18,12 @@ public class GeneticSolution implements Comparable<GeneticSolution> {
 	}
 
 	@Override
-	public int compareTo(GeneticSolution other) {
+	public int compareTo(Solution other) {
 		return Double.compare(fitness, other.fitness);
 	}
 
-	public GeneticSolution withChromosome(Chromosome newChromosome) {
-		return new GeneticSolution(newChromosome, this.fitness, this.coveredTileList);
+	public Solution withChromosome(Chromosome newChromosome) {
+		return new Solution(newChromosome, this.fitness, this.coveredTileList);
 	}
 
 	public float coverability(final int totalTilesCount) {
@@ -55,7 +55,7 @@ public class GeneticSolution implements Comparable<GeneticSolution> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		GeneticSolution other = (GeneticSolution) obj;
+		Solution other = (Solution) obj;
 		if (Double.doubleToLongBits(fitness) != Double.doubleToLongBits(other.fitness))
 			return false;
 		if (chromosome == null) {
@@ -66,7 +66,7 @@ public class GeneticSolution implements Comparable<GeneticSolution> {
 		return true;
 	}
 
-	public static Comparator<GeneticSolution> getBestFitnessComparator() {
+	public static Comparator<Solution> getBestFitnessComparator() {
 		return (solution1, solution2) -> Double.compare(solution2.fitness, solution1.fitness);
 	}
 

@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import coberturawifi.Configs;
 import coberturawifi.model.Chromosome;
-import coberturawifi.model.GeneticSolution;
+import coberturawifi.model.Solution;
 import coberturawifi.util.Randomizer;
 
 class SelectionAgent {
@@ -34,7 +34,7 @@ class SelectionAgent {
 		return instance;
 	}
 
-	public List<Chromosome> select(final List<GeneticSolution> solutionList) {
+	public List<Chromosome> select(final List<Solution> solutionList) {
 
 		final List<Chromosome> selectedPopulation = new ArrayList<>(selectedPopulationSize);
 		for (short i = 0; i < selectedPopulationSize; i++) {
@@ -44,13 +44,13 @@ class SelectionAgent {
 		return selectedPopulation;
 	}
 
-	private Chromosome rollTheRoulette(final List<GeneticSolution> solutionList) {
+	private Chromosome rollTheRoulette(final List<Solution> solutionList) {
 		final double totalFitness = solutionList.stream()
 				.collect(Collectors.summingDouble(solution -> solution.fitness));
 		final double rolled = randomizer.nextDouble(totalFitness);
 
 		double accumulated = 0;
-		for (GeneticSolution solution : solutionList) {
+		for (Solution solution : solutionList) {
 			accumulated += solution.fitness;
 			if (accumulated >= rolled) {
 				return solution.chromosome;

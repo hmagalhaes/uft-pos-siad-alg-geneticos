@@ -7,8 +7,7 @@ import java.util.stream.Collectors;
 import coberturawifi.Configs;
 import coberturawifi.model.Blueprint;
 import coberturawifi.model.Chromosome;
-import coberturawifi.model.GeneticSolution;
-import coberturawifi.model.Layout;
+import coberturawifi.model.Solution;
 
 public class SolutionFinder {
 
@@ -42,7 +41,7 @@ public class SolutionFinder {
 		return instance;
 	}
 
-	public List<Layout> findBestMatch(final Blueprint blueprint) {
+	public List<Solution> findBestMatch(final Blueprint blueprint) {
 
 		final short accessPointRadiusInMeters = Configs.getInstance().getShort(Configs.ACCESS_POINT_RADIUS_IN_METERS);
 		final int accessPointRadiusInPixels = accessPointRadiusInMeters * blueprint.pixelsForMeter;
@@ -55,14 +54,14 @@ public class SolutionFinder {
 		List<Chromosome> population = initialPopGenerator.generatePopulation(blueprint, accessPointCount);
 		int generation = 0;
 		while (true) {
-			final List<GeneticSolution> solutionList = fitnessAgent.calculateFitness(blueprint, population,
+			final List<Solution> solutionList = fitnessAgent.calculateFitness(blueprint, population,
 					accessPointRadiusInPixels);
 			System.out.printf("Buscando => geração: %d / %d, melhorLocal: %f, mediaLocal: %f, melhorGlobal: %f\n",
 					generation + 1, this.generationCount, getBestFitness(solutionList), getAverageFitness(solutionList),
 					bestSolutionsHolder.currentBestFitness());
 
 			System.out.println("Melhores da geração:");
-			solutionList.stream().sorted(GeneticSolution.getBestFitnessComparator()).limit(resultSolutionCount)
+			solutionList.stream().sorted(Solution.getBestFitnessComparator()).limit(resultSolutionCount)
 					.map(solution -> solution.fitness).forEach(System.out::println);
 
 			bestSolutionsHolder.checkForBetter(solutionList);
@@ -76,32 +75,29 @@ public class SolutionFinder {
 		}
 
 		System.out.println("Global best:");
-		final List<GeneticSolution> globalBestSolutionList = bestSolutionsHolder.getBestSolutions();
+		final List<Solution> globalBestSolutionList = bestSolutionsHolder.getBestSolutions();
 		final int totalRequiredTiles = blueprint.requiredTileList.size();
 
-		final List<Layout> layoutList = new ArrayList<>(globalBestSolutionList.size());
-		for (GeneticSolution solution : globalBestSolutionList) {
+		for (Solution solution : globalBestSolutionList) {
 			System.out.println("--- coverability: " + solution.coverability(totalRequiredTiles) + ", requiredTiles: "
 					+ totalRequiredTiles + ", solution: " + solution);
-
-			final Layout layout = Layout.of(solution, accessPointRadiusInPixels);
-			layoutList.add(layout);
 		}
-		return layoutList;
+
+		return globalBestSolutionList;
 	}
 
-	private float getBestFitness(List<GeneticSolution> solutionList) {
+	private float getBestFitness(List<Solution> solutionList) {
 		return solutionList.stream().map(solution -> solution.fitness)
 				.collect(Collectors.maxBy((fitness1, fitness2) -> Double.compare(fitness1, fitness2))).get()
 				.floatValue();
 	}
 
-	private float getAverageFitness(List<GeneticSolution> solutionList) {
+	private float getAverageFitness(List<Solution> solutionList) {
 		return solutionList.stream().collect(Collectors.averagingDouble(solution -> solution.fitness)).floatValue();
 	}
 
-	private List<Chromosome> createNewGeneration(final List<Chromosome> population,
-			final List<GeneticSolution> solutionList, final Blueprint blueprint) {
+	private List<Chromosome> createNewGeneration(final List<Chromosome> population, final List<Solution> solutionList,
+			final Blueprint blueprint) {
 
 		final List<Chromosome> eliteList = eliteAgent.findPopulationElite(solutionList);
 		final List<Chromosome> crossedList = crossingAgent.crossPopulation(population);

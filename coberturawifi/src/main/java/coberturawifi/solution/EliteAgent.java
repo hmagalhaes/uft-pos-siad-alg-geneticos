@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import coberturawifi.Configs;
 import coberturawifi.model.Chromosome;
-import coberturawifi.model.GeneticSolution;
+import coberturawifi.model.Solution;
 
 public class EliteAgent {
 
@@ -33,15 +33,15 @@ public class EliteAgent {
 		return instance;
 	}
 
-	public List<Chromosome> findPopulationElite(final List<GeneticSolution> solutionList) {
+	public List<Chromosome> findPopulationElite(final List<Solution> solutionList) {
 
-		final List<GeneticSolution> sortedSolutions = solutionList.stream()
-				.sorted(GeneticSolution.getBestFitnessComparator()).collect(Collectors.toList());
+		final List<Solution> sortedSolutions = solutionList.stream()
+				.sorted(Solution.getBestFitnessComparator()).collect(Collectors.toList());
 
 //		System.out.println("Generation elite:");
 		final List<Chromosome> eliteList = new ArrayList<>(elitePopulationSize);
 		for (int i = 0; i < elitePopulationSize; i++) {
-			final GeneticSolution solution = sortedSolutions.get(i);
+			final Solution solution = sortedSolutions.get(i);
 			final Chromosome elite = solution.chromosome;
 
 			eliteList.add(elite);
