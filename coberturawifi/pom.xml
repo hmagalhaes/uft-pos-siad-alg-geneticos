@@ -37,25 +37,6 @@
 				<version>1.6.0</version>
 				<configuration>
 					<mainClass>coberturawifi.CoberturaApplication</mainClass>
-					<arguments>
-						<!-- Arquivo da planta -->
-						<argument>IFTO/blueprint - marked.png</argument>
-						
-						<!-- Diretório de saída -->
-						<argument>IFTO/resultado</argument>
-
-						<!-- Largura da planta em metros -->
-						<argument>20</argument>
-
-						<!-- Altura da Planta -->
-						<argument>55</argument>
-
-						<!-- Quantidade de pontos de acesso -->
-						<argument>4</argument>
-
-						<!-- Raio de cobertura do ponto de acesso -->
-						<argument>5</argument>
-					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>

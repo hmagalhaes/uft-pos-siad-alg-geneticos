@@ -42,10 +42,15 @@ public class SolutionFinder {
 		return instance;
 	}
 
-	public List<Layout> findBestMatch(final Blueprint blueprint, final short accessPointCount,
-			final int accessPointRadiusInPixels) {
+	public List<Layout> findBestMatch(final Blueprint blueprint) {
+
+		final short accessPointRadiusInMeters = Configs.getInstance().getShort(Configs.ACCESS_POINT_RADIUS_IN_METERS);
+		final int accessPointRadiusInPixels = accessPointRadiusInMeters * blueprint.pixelsForMeter;
+		System.out.println(
+				"RadioPontoAcesso => " + accessPointRadiusInMeters + "m => " + accessPointRadiusInPixels + "px");
 
 		final BestSolutionsHolder bestSolutionsHolder = new BestSolutionsHolder(resultSolutionCount);
+		final short accessPointCount = Configs.getInstance().getShort(Configs.ACCESS_POINT_QUANTITY);
 
 		List<Chromosome> population = initialPopGenerator.generatePopulation(blueprint, accessPointCount);
 		int generation = 0;

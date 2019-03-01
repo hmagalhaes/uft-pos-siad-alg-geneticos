@@ -6,9 +6,9 @@ import java.util.List;
 public class Layout {
 
 	public final List<AccessPoint> accessPointList;
-	public final List<Tile> coveredTileList;
+	public final List<Rect> coveredTileList;
 
-	public Layout(List<AccessPoint> accessPointList, List<Tile> coveredTileList) {
+	public Layout(List<AccessPoint> accessPointList, List<Rect> coveredTileList) {
 		this.accessPointList = accessPointList;
 		this.coveredTileList = coveredTileList;
 	}
@@ -22,7 +22,6 @@ public class Layout {
 			apList.add(ap);
 		}
 
-		// TODO remover lista de tiles criada para debug
 		return new Layout(apList, geneticSolution.coveredTileList);
 	}
 

@@ -8,7 +8,6 @@ import coberturawifi.model.Chromosome;
 import coberturawifi.model.Coordinates;
 import coberturawifi.model.GeneticSolution;
 import coberturawifi.model.Rect;
-import coberturawifi.model.Tile;
 
 public class FitnessAgent {
 
@@ -39,8 +38,8 @@ public class FitnessAgent {
 	private GeneticSolution calculateFitness(final Blueprint blueprint, final Chromosome chromosome,
 			final int accessPointRadiusInPixels) {
 
-		final List<Tile> coveredTileList = new ArrayList<>();
-		for (Tile tile : blueprint.requiredTileList) {
+		final List<Rect> coveredTileList = new ArrayList<>();
+		for (Rect tile : blueprint.requiredTileList) {
 			if (isHit(tile, chromosome, accessPointRadiusInPixels)) {
 				coveredTileList.add(tile);
 			}
@@ -54,11 +53,11 @@ public class FitnessAgent {
 		return new GeneticSolution(chromosome, fitness, coveredTileList);
 	}
 
-	private <T extends Chromosome> boolean isHit(final Tile tile, final T chromosome,
+	private <T extends Chromosome> boolean isHit(final Rect rect, final T chromosome,
 			final int accessPointRadiusInPixels) {
 
 		for (Coordinates coords : chromosome.getCoordinateList()) {
-			if (collides(tile.rect, coords, accessPointRadiusInPixels)) {
+			if (collides(rect, coords, accessPointRadiusInPixels)) {
 				return true;
 			}
 		}

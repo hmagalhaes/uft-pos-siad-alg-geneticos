@@ -9,12 +9,12 @@ public class Blueprint {
 	public final int heightInPixels;
 	public final int widthInMeters;
 	public final int heightInMeters;
-	public final List<Tile> requiredTileList;
-	public final List<Tile> allTileList;
+	public final List<Rect> requiredTileList;
+	public final List<Rect> allTileList;
 	public final int pixelsForMeter;
 
 	public Blueprint(int widthInPixels, int heightInPixels, int widthInMeters, int heightInMeters,
-			List<Tile> requiredTileList, List<Tile> allTileList, int pixelsForMeter) {
+			List<Rect> requiredTileList, List<Rect> allTileList, int pixelsForMeter) {
 
 		this.widthInPixels = widthInPixels;
 		this.heightInPixels = heightInPixels;
@@ -31,8 +31,8 @@ public class Blueprint {
 		private int heightInPixels;
 		private int widthInMeters;
 		private int heightInMeters;
-		private List<Tile> requiredTileList;
-		private List<Tile> allTileList;
+		private List<Rect> requiredTileList;
+		private List<Rect> allTileList;
 		private int pixelsForMeter;
 
 		public Blueprint build() {
@@ -60,12 +60,12 @@ public class Blueprint {
 			return this;
 		}
 
-		public BlueprintBuilder requiredTileList(List<Tile> requiredTileList) {
+		public BlueprintBuilder requiredTileList(List<Rect> requiredTileList) {
 			this.requiredTileList = requiredTileList;
 			return this;
 		}
 
-		public BlueprintBuilder allTileList(List<Tile> allTileList) {
+		public BlueprintBuilder allTileList(List<Rect> allTileList) {
 			this.allTileList = allTileList;
 			return this;
 		}

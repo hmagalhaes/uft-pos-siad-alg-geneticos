@@ -1,0 +1,8 @@
+Global best:
+--- coverability: 0.86475945, requiredTiles: 769, solution: GeneticSolution [chromosome=Chromosome [ [Coordinates [x=151, y=1627], Coordinates [x=524, y=1710], Coordinates [x=176, y=890], Coordinates [x=167, y=189], Coordinates [x=490, y=464]] ], fitness=0.8647594278283485, coveredTiles=665]
+
+--- coverability: 0.86345905, requiredTiles: 769, solution: GeneticSolution [chromosome=Chromosome [ [Coordinates [x=178, y=1627], Coordinates [x=524, y=1710], Coordinates [x=176, y=890], Coordinates [x=167, y=189], Coordinates [x=490, y=464]] ], fitness=0.8634590377113134, coveredTiles=664]
+
+--- coverability: 0.86085826, requiredTiles: 769, solution: GeneticSolution [chromosome=Chromosome [ [Coordinates [x=178, y=1627], Coordinates [x=524, y=1717], Coordinates [x=176, y=890], Coordinates [x=167, y=189], Coordinates [x=490, y=464]] ], fitness=0.8608582574772432, coveredTiles=662]
+
+Soluções encontradas em 8330ms

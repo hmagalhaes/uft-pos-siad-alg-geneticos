@@ -4,20 +4,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import coberturawifi.Configs;
 import coberturawifi.model.AccessPoint;
 import coberturawifi.model.Blueprint;
 import coberturawifi.model.Layout;
-import coberturawifi.model.Tile;
+import coberturawifi.model.Rect;
+import coberturawifi.util.ImageHelper;
 
 public class SolutionWriter {
 
@@ -31,12 +25,18 @@ public class SolutionWriter {
 	private final Color radiusColor;
 	private final Color crossColor;
 	private final Color gridColor;
+	private final String fileFormat;
+	private final String outputFolder;
+	private final String blueprintFile;
 
 	private SolutionWriter() {
 		final Configs configs = Configs.getInstance();
 		this.radiusColor = Color.decode(configs.getString(Configs.RESULT_COLOR_RADIUS));
 		this.crossColor = Color.decode(configs.getString(Configs.RESULT_COLOR_CROSS));
 		this.gridColor = Color.decode(configs.getString(Configs.RESULT_COLOR_GRID));
+		this.fileFormat = configs.getString(Configs.RESULT_FILE_FORMAT);
+		this.outputFolder = configs.getString(Configs.RESULT_OUTPUT_FOLDER);
+		this.blueprintFile = Configs.getInstance().getString(Configs.BLUEPRINT_INPUT_FILE);
 	}
 
 	public static SolutionWriter getInstance() {
@@ -46,64 +46,69 @@ public class SolutionWriter {
 		return instance;
 	}
 
-	public void printGridAllTiles(final String blueprintFile, final Blueprint blueprint, final String outputFolder) {
+	public void printGridAllTiles(final Blueprint blueprint) {
 		final String outputFilePattern = Configs.getInstance().getString(Configs.RESULT_GRID_ALL_FILE_PATTERN);
-		printGrid(blueprintFile, outputFilePattern, blueprint.allTileList, outputFolder);
+		printGrid(outputFilePattern, blueprint.allTileList);
 	}
 
-	public void printGridSelectedTiles(final String blueprintFile, final Blueprint blueprint,
-			final String outputFolder) {
+	public void printGridSelectedTiles(final Blueprint blueprint) {
 		final String outputFilePattern = Configs.getInstance().getString(Configs.RESULT_GRID_SELECTED_FILE_PATTERN);
-		printGrid(blueprintFile, outputFilePattern, blueprint.requiredTileList, outputFolder);
+		printGrid(outputFilePattern, blueprint.requiredTileList);
 	}
 
-	public void printGrid(final String blueprintFile, final String outputFilePattern, final List<Tile> tileList,
-			final String outputFolder) {
+	public void printGrid(final String outputFilePattern, final List<Rect> tileList) {
 
-		final BufferedImage image = loadImage(blueprintFile);
+		final BufferedImage image = ImageHelper.readImage(blueprintFile);
 		final Graphics2D graphics = image.createGraphics();
 
 		graphics.setColor(gridColor);
 
-		for (Tile tile : tileList) {
-			final int x = tile.rect.x1;
-			final int y = tile.rect.y1;
-			final int width = tile.rect.x2 - tile.rect.x1;
-			final int height = tile.rect.y2 - tile.rect.y1;
+		for (Rect rect : tileList) {
+			final int x = rect.x1;
+			final int y = rect.y1;
+			final int width = rect.x2 - rect.x1;
+			final int height = rect.y2 - rect.y1;
 
 			graphics.drawRect(x, y, width, height);
 		}
 
-		final String fileFormat = Configs.getInstance().getString(Configs.RESULT_FILE_FORMAT);
 		final String outputFile = outputFilePattern.replace(FILE_PATTERN_FOLDER_TOKEN, outputFolder)
 				.replace(FILE_PATTERN_EXTENSION_TOKEN, fileFormat);
 		System.out.printf("Salvando grid em => %s\n", outputFile);
-		saveImage(image, outputFile, fileFormat);
+		ImageHelper.saveImage(image, outputFile, fileFormat);
 	}
 
-	public void printSolutions(final String blueprintFile, final List<Layout> layoutList, final String outputFolder) {
+	public void printSolutions(final Blueprint blueprint, final List<Layout> layoutList) {
 
-		final String fileFormat = Configs.getInstance().getString(Configs.RESULT_FILE_FORMAT);
 		final String outputPattern = Configs.getInstance().getString(Configs.RESULT_SOLUTION_FILE_PATTERN);
 		final String coveredTilesFileName = Configs.getInstance()
 				.getString(Configs.RESULT_SOLUTION_COVERED_TILES_FILE_PATTERN);
+		final boolean printGrids = Configs.getInstance().getBoolean(Configs.RESULT_PRINT_GRID);
+
 		for (int layoutIndex = 0; layoutIndex < layoutList.size(); layoutIndex++) {
 			final Layout layout = layoutList.get(layoutIndex);
 
-			final BufferedImage image = loadImage(blueprintFile);
+			final BufferedImage image = ImageHelper.readImage(blueprintFile);
 			final List<AccessPoint> accessPointList = layout.accessPointList;
 			printSolutions(image, accessPointList);
 
 			final String outputFile = outputPattern.replace(FILE_PATTERN_FOLDER_TOKEN, outputFolder)
 					.replace(FILE_PATTERN_INDEX_TOKEN, Integer.toString(layoutIndex))
-					.replace(FILE_PATTERN_EXTENSION_TOKEN, fileFormat);	
-			System.out.printf("Salvando solução %d em => %s\n", layoutIndex, outputFile);
-			saveImage(image, outputFile, fileFormat);
-
-			final String coveredTilesFile = coveredTilesFileName.replace(FILE_PATTERN_FOLDER_TOKEN, outputFolder)
-					.replace(FILE_PATTERN_INDEX_TOKEN, Integer.toString(layoutIndex))
 					.replace(FILE_PATTERN_EXTENSION_TOKEN, fileFormat);
-			printGrid(blueprintFile, coveredTilesFile, layout.coveredTileList, outputFolder);
+			System.out.printf("Salvando solução %d em => %s\n", layoutIndex, outputFile);
+			ImageHelper.saveImage(image, outputFile, fileFormat);
+
+			if (printGrids) {
+				final String coveredTilesFile = coveredTilesFileName.replace(FILE_PATTERN_FOLDER_TOKEN, outputFolder)
+						.replace(FILE_PATTERN_INDEX_TOKEN, Integer.toString(layoutIndex))
+						.replace(FILE_PATTERN_EXTENSION_TOKEN, fileFormat);
+				printGrid(coveredTilesFile, layout.coveredTileList);
+			}
+		}
+
+		if (printGrids) {
+			printGridAllTiles(blueprint);
+			printGridSelectedTiles(blueprint);
 		}
 	}
 
@@ -117,15 +122,15 @@ public class SolutionWriter {
 		for (int i = 0; i < accessPointList.size(); i++) {
 			final AccessPoint ap = accessPointList.get(i);
 			drawRadius(ap, graphics);
-//			drawCross(ap, graphics);
-			drawNumber(ap, graphics, i);
+			drawCross(ap, graphics);
+//			drawNumber(ap, graphics, i);
 		}
 	}
 
-	private void drawNumber(final AccessPoint ap, final Graphics2D graphics, final int number) {
-		graphics.setColor(crossColor);
-		graphics.drawString(Integer.toString(number), ap.x - 3, ap.y - 3);
-	}
+//	private void drawNumber(final AccessPoint ap, final Graphics2D graphics, final int number) {
+//		graphics.setColor(crossColor);
+//		graphics.drawString(Integer.toString(number), ap.x - 3, ap.y - 3);
+//	}
 
 	private void drawCross(final AccessPoint ap, final Graphics2D graphics) {
 		graphics.setColor(crossColor);
@@ -152,22 +157,6 @@ public class SolutionWriter {
 
 		graphics.setColor(radiusColor);
 		graphics.fillOval(x, y, doubleRadius, doubleRadius);
-	}
-
-	private void saveImage(final BufferedImage image, final String outputFile, final String fileFormat) {
-		try (OutputStream os = new FileOutputStream(outputFile)) {
-			ImageIO.write(image, fileFormat, os);
-		} catch (IOException ex) {
-			throw new RuntimeException("Unable to save solution file", ex);
-		}
-	}
-
-	private BufferedImage loadImage(final String plantFileName) {
-		try (InputStream is = new FileInputStream(plantFileName)) {
-			return ImageIO.read(is);
-		} catch (IOException ex) {
-			throw new RuntimeException("Unable to load plant file", ex);
-		}
 	}
 
 }

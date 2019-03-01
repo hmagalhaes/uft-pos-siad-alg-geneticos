@@ -8,9 +8,9 @@ public class GeneticSolution implements Comparable<GeneticSolution> {
 
 	public final Chromosome chromosome;
 	public final double fitness;
-	public final List<Tile> coveredTileList;
+	public final List<Rect> coveredTileList;
 
-	public GeneticSolution(Chromosome chromosome, double fitness, List<Tile> coveredTileList) {
+	public GeneticSolution(Chromosome chromosome, double fitness, List<Rect> coveredTileList) {
 		this.chromosome = chromosome;
 		this.fitness = fitness;
 		this.coveredTileList = coveredTileList == null ? Collections.emptyList()

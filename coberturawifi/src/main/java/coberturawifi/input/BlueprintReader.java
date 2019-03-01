@@ -2,20 +2,16 @@ package coberturawifi.input;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import coberturawifi.Configs;
 import coberturawifi.model.Blueprint;
+import coberturawifi.model.Blueprint.BlueprintBuilder;
 import coberturawifi.model.Pixel;
 import coberturawifi.model.Rect;
-import coberturawifi.model.Tile;
-import coberturawifi.model.Blueprint.BlueprintBuilder;
 import coberturawifi.model.Rect.RectBuilder;
+import coberturawifi.util.ImageHelper;
 
 public class BlueprintReader {
 
@@ -28,48 +24,54 @@ public class BlueprintReader {
 		return instance;
 	}
 
-	public Blueprint readPlant(final String fileName, final int blueprintWidth, final int blueprintHeight) {
-		final BufferedImage image = readImage(fileName);
-		final Tiles tiles = createTiles(blueprintWidth, blueprintHeight, image);
+	public Blueprint readPlant() {
+		final String fileName = Configs.getInstance().getString(Configs.BLUEPRINT_INPUT_FILE);
+		final int blueprintWidth = Configs.getInstance().getInt(Configs.BLUEPRINT_WIDTH_IN_METERS);
+		final int blueprintHeight = Configs.getInstance().getInt(Configs.BLUEPRINT_HEIGHT_IN_METERS);
+
+		System.out.println("Lendo planta => arquivo: " + fileName + ", largura: " + blueprintWidth + "m, altura: "
+				+ blueprintHeight + "m");
+
+		final BufferedImage image = ImageHelper.readImage(fileName);
+		final Rects Rects = createRects(blueprintWidth, blueprintHeight, image);
 		final int pixelsForMeter = image.getWidth() / blueprintWidth;
 
 		return new BlueprintBuilder().widthInMeters(blueprintWidth).heightInMeters(blueprintHeight)
-				.widthInPixels(image.getWidth()).heightInPixels(image.getHeight()).requiredTileList(tiles.requiredTiles)
-				.allTileList(tiles.allTiles).pixelsForMeter(pixelsForMeter).build();
+				.widthInPixels(image.getWidth()).heightInPixels(image.getHeight()).requiredTileList(Rects.requiredRects)
+				.allTileList(Rects.allRects).pixelsForMeter(pixelsForMeter).build();
 	}
 
-	private class Tiles {
+	private class Rects {
 
-		final List<Tile> allTiles = new ArrayList<>();
-		final List<Tile> requiredTiles = new ArrayList<>();
+		final List<Rect> allRects = new ArrayList<>();
+		final List<Rect> requiredRects = new ArrayList<>();
 
 	}
 
-	private Tiles createTiles(final int plantWidth, final int plantHeight, final BufferedImage image) {
+	private Rects createRects(final int plantWidth, final int plantHeight, final BufferedImage image) {
 		final List<Pixel> activatedPixelList = getRequiredPixels(image);
 
-		final float tileSizeInMeters = Configs.getInstance().getFloat(Configs.TILE_SIZE_IN_METERS);
+		final float RectSizeInMeters = Configs.getInstance().getFloat(Configs.TILE_SIZE_IN_METERS);
 
 		// regra de 3
-		final int tileSizeInPixels = (int) ((tileSizeInMeters * image.getWidth()) / plantWidth);
+		final int RectSizeInPixels = (int) ((RectSizeInMeters * image.getWidth()) / plantWidth);
 
-		final Tiles tiles = new Tiles();
+		final Rects rects = new Rects();
 
-		for (int x = 0; x < image.getWidth(); x += tileSizeInPixels) {
-			for (int y = 0; y < image.getHeight(); y += tileSizeInPixels) {
+		for (int x = 0; x < image.getWidth(); x += RectSizeInPixels) {
+			for (int y = 0; y < image.getHeight(); y += RectSizeInPixels) {
 
-				final Rect rect = new RectBuilder().x(x).y(y).width(tileSizeInPixels).height(tileSizeInPixels).build();
-				final Tile tile = new Tile(rect);
+				final Rect rect = new RectBuilder().x(x).y(y).width(RectSizeInPixels).height(RectSizeInPixels).build();
 
-				tiles.allTiles.add(tile);
+				rects.allRects.add(rect);
 
 				final boolean coverabilityRequired = isAnyPixelInRect(activatedPixelList, rect);
 				if (coverabilityRequired) {
-					tiles.requiredTiles.add(tile);
+					rects.requiredRects.add(rect);
 				}
 			}
 		}
-		return tiles;
+		return rects;
 	}
 
 	private boolean isAnyPixelInRect(final List<Pixel> pixelList, final Rect rect) {
@@ -79,15 +81,6 @@ public class BlueprintReader {
 			}
 		}
 		return false;
-	}
-
-	private BufferedImage readImage(final String fileName) {
-		final File file = new File(fileName);
-		try {
-			return ImageIO.read(file);
-		} catch (IOException ex) {
-			throw new RuntimeException("Error whilst reading plant file", ex);
-		}
 	}
 
 	private List<Pixel> getRequiredPixels(final BufferedImage image) {
